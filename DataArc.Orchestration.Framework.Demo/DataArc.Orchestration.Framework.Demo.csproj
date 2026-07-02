@@ -37,6 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DataArc.Orchestration.Framework.Demo.Application\DataArc.Orchestration.Framework.Demo.Application.csproj" />
     <ProjectReference Include="..\DataArc.Orchestration.Framework.Demo.Persistence\DataArc.Orchestration.Framework.Demo.Persistence.csproj" />
   </ItemGroup>
 
