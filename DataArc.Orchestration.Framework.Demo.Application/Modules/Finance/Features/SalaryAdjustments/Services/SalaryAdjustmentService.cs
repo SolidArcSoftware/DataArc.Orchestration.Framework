@@ -2,7 +2,7 @@
 using DataArc.Orchestration.Framework.Demo.Persistence.Contracts;
 using DataArc.Orchestration.Framework.Demo.Persistence.DbModels;
 
-namespace DataArc.Orchestration.Framework.Demo.Application.Modules.Finance.Features.SalaryAdjustments.Services
+namespace DataArc.Orchestration.Framework.Demo.Modules.Finance.Features.SalaryAdjustments.Services
 {
     internal class SalaryAdjustmentService : ISalaryAdjustmentService
     {

@@ -2,9 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-using DataArc.Orchestration.Framework.Demo.Application.Modules.Finance.Registration;
-using DataArc.Orchestration.Framework.Demo.Application.Workers;
 using DataArc.Orchestration.Framework.Demo.Persistence;
+using DataArc.Orchestration.Framework.Demo.Workers;
+using DataArc.Orchestration.Framework.Demo.Application.Registration;
 
 var host = Host
     .CreateDefaultBuilder(args)

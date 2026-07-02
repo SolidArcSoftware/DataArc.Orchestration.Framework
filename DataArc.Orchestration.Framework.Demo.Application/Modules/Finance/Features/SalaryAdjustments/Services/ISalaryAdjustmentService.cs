@@ -1,4 +1,4 @@
-﻿namespace DataArc.Orchestration.Framework.Demo.Application.Modules.Finance.Features.SalaryAdjustments.Services
+﻿namespace DataArc.Orchestration.Framework.Demo.Modules.Finance.Features.SalaryAdjustments.Services
 {
     public interface ISalaryAdjustmentService
     {

@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using DataArc.Orchestration.Framework.Demo.Application.Modules.Finance.Features.SalaryAdjustments.Services;
+using DataArc.Orchestration.Framework.Demo.Modules.Finance.Features.SalaryAdjustments.Services;
 using DataArc.Orchestration.Framework.Demo.Persistence;
 
-namespace DataArc.Orchestration.Framework.Demo.Application.Modules.Finance.Registration
+namespace DataArc.Orchestration.Framework.Demo.Application.Registration
 {
     public static class FinanceRegistrationModule
     {

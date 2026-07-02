@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Hosting;
 
-using DataArc.Orchestration.Framework.Demo.Application.Modules.Finance.Features.SalaryAdjustments.Services;
+using DataArc.Orchestration.Framework.Demo.Modules.Finance.Features.SalaryAdjustments.Services;
 
-namespace DataArc.Orchestration.Framework.Demo.Application.Workers
+namespace DataArc.Orchestration.Framework.Demo.Workers
 {
     internal sealed class DemoWorkflowWorker : BackgroundService
     {
@@ -44,7 +44,7 @@ namespace DataArc.Orchestration.Framework.Demo.Application.Workers
                         .GetTopRatedEmployeesAsync(ratingThreshold);
 
                     var topRatedEmployee = topRatedEmployees
-                        .OrderByDescending(employee => employee.Salary)
+                        .OrderByDescending(employee => employee.CurrentSalary)
                         .FirstOrDefault();
 
                     Console.WriteLine();
@@ -52,7 +52,7 @@ namespace DataArc.Orchestration.Framework.Demo.Application.Workers
                     Console.WriteLine(topRatedEmployee is null
                         ? "No top rated employees found."
                         : $"Top Rated Employee: {topRatedEmployee.Name} {topRatedEmployee.Surname}, " +
-                          $"Salary: {topRatedEmployee.Salary:N2}, " +
+                          $"Salary: {topRatedEmployee.CurrentSalary:N2}, " +
                           $"Number of top rated employees: {topRatedEmployees.Count:N0}");
                 }
 
