@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataArc.Orchestration.Frame
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataArc.Orchestration.Framework.Demo.Orchestration", "DataArc.Orchestration.Framework.Demo.Orchestration\DataArc.Orchestration.Framework.Demo.Orchestration.csproj", "{D77A8035-3A2D-4109-A112-EC2284E90E6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataArc.Orchestration.Framework.Demo.Application.Domain", "DataArc.Orchestration.Framework.Demo.Application.Domain\DataArc.Orchestration.Framework.Demo.Application.Domain.csproj", "{107D2535-525E-D208-2154-70993485D178}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{7768D845-2814-425E-95E4-E10A9FA0ABAA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{243BD93A-A0F8-404B-B4E2-AD8C2DB25899}"
@@ -16,24 +14,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Orchestration", "Orchestration", "{7BCAA116-1844-433B-9E69-9E9DC7540030}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Host", "Host", "{B83674A9-289D-4647-B5E9-CDEC845EBDC1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataArc.Orchestration.Framework.Demo.Application.UseCases", "DataArc.Orchestration.Framework.Demo.Application.UseCases\DataArc.Orchestration.Framework.Demo.Application.UseCases.csproj", "{9E9CFA1F-E0BF-431C-A61F-F5659B3090C1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataArc.Orchestration.Framework.Demo.Host", "DataArc.Orchestration.Framework.Demo.Host\DataArc.Orchestration.Framework.Demo.Host.csproj", "{D10136D6-EF8F-4606-DFEA-4570C046CF44}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataArc.Orchestration.Framework.Demo.Application.Features", "DataArc.Orchestration.Framework.Demo.Application.Features\DataArc.Orchestration.Framework.Demo.Application.Features.csproj", "{7AA24ED2-1AE2-B7C2-3868-0167FCB6A83D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{E85177E5-8851-4C3A-B823-F2F992901C9A}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Features", "Features", "{B0121501-4EEC-43B6-A480-684903FBC7E1}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UseCases", "UseCases", "{47CB99BB-C9F5-4D97-8574-359F5634F536}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{88BD361A-AB65-4949-9FFA-1B8ED69DAA6A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataArc.Orchestration.Framework.Demo.Application.Domain.SharedKernel", "DataArc.Orchestration.Framework.Demo.Application.Domain.SharedKernel\DataArc.Orchestration.Framework.Demo.Application.Domain.SharedKernel.csproj", "{A3FBA5B5-4E63-4D3E-A514-174C49B7DD41}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataArc.Orchestration.Framework.Demo.Application.Modules", "DataArc.Orchestration.Framework.Demo.Application.Modules\DataArc.Orchestration.Framework.Demo.Application.Modules.csproj", "{FC2B1D84-7326-45E1-9B93-4235A8584998}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,30 +29,6 @@ Global
 		{D77A8035-3A2D-4109-A112-EC2284E90E6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D77A8035-3A2D-4109-A112-EC2284E90E6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D77A8035-3A2D-4109-A112-EC2284E90E6A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{107D2535-525E-D208-2154-70993485D178}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{107D2535-525E-D208-2154-70993485D178}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{107D2535-525E-D208-2154-70993485D178}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{107D2535-525E-D208-2154-70993485D178}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9E9CFA1F-E0BF-431C-A61F-F5659B3090C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9E9CFA1F-E0BF-431C-A61F-F5659B3090C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9E9CFA1F-E0BF-431C-A61F-F5659B3090C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9E9CFA1F-E0BF-431C-A61F-F5659B3090C1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D10136D6-EF8F-4606-DFEA-4570C046CF44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D10136D6-EF8F-4606-DFEA-4570C046CF44}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D10136D6-EF8F-4606-DFEA-4570C046CF44}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D10136D6-EF8F-4606-DFEA-4570C046CF44}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7AA24ED2-1AE2-B7C2-3868-0167FCB6A83D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7AA24ED2-1AE2-B7C2-3868-0167FCB6A83D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7AA24ED2-1AE2-B7C2-3868-0167FCB6A83D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7AA24ED2-1AE2-B7C2-3868-0167FCB6A83D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A3FBA5B5-4E63-4D3E-A514-174C49B7DD41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A3FBA5B5-4E63-4D3E-A514-174C49B7DD41}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A3FBA5B5-4E63-4D3E-A514-174C49B7DD41}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A3FBA5B5-4E63-4D3E-A514-174C49B7DD41}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FC2B1D84-7326-45E1-9B93-4235A8584998}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FC2B1D84-7326-45E1-9B93-4235A8584998}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FC2B1D84-7326-45E1-9B93-4235A8584998}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FC2B1D84-7326-45E1-9B93-4235A8584998}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,16 +36,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{58C43693-0D81-D124-38B3-017B792F3C1A} = {243BD93A-A0F8-404B-B4E2-AD8C2DB25899}
 		{D77A8035-3A2D-4109-A112-EC2284E90E6A} = {7BCAA116-1844-433B-9E69-9E9DC7540030}
-		{107D2535-525E-D208-2154-70993485D178} = {E85177E5-8851-4C3A-B823-F2F992901C9A}
-		{9E9CFA1F-E0BF-431C-A61F-F5659B3090C1} = {47CB99BB-C9F5-4D97-8574-359F5634F536}
-		{D10136D6-EF8F-4606-DFEA-4570C046CF44} = {B83674A9-289D-4647-B5E9-CDEC845EBDC1}
-		{7AA24ED2-1AE2-B7C2-3868-0167FCB6A83D} = {B0121501-4EEC-43B6-A480-684903FBC7E1}
-		{E85177E5-8851-4C3A-B823-F2F992901C9A} = {7768D845-2814-425E-95E4-E10A9FA0ABAA}
-		{B0121501-4EEC-43B6-A480-684903FBC7E1} = {7768D845-2814-425E-95E4-E10A9FA0ABAA}
-		{47CB99BB-C9F5-4D97-8574-359F5634F536} = {7768D845-2814-425E-95E4-E10A9FA0ABAA}
-		{88BD361A-AB65-4949-9FFA-1B8ED69DAA6A} = {7768D845-2814-425E-95E4-E10A9FA0ABAA}
-		{A3FBA5B5-4E63-4D3E-A514-174C49B7DD41} = {E85177E5-8851-4C3A-B823-F2F992901C9A}
-		{FC2B1D84-7326-45E1-9B93-4235A8584998} = {88BD361A-AB65-4949-9FFA-1B8ED69DAA6A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {06097E78-A547-49F1-AB64-E7F8BDDEE0F0}

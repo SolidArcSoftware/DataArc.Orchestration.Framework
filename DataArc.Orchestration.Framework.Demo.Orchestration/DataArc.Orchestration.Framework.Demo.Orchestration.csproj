@@ -10,7 +10,6 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\DataArc.Orchestration.Framework.Demo.Application.UseCases\DataArc.Orchestration.Framework.Demo.Application.UseCases.csproj" />
     <ProjectReference Include="..\DataArc.Orchestration.Framework.Demo.Persistence\DataArc.Orchestration.Framework.Demo.Persistence.csproj" />
   </ItemGroup>
 
