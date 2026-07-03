@@ -10,7 +10,12 @@
 
 
   <ItemGroup>
+    <PackageReference Include="DataArc.Observer" Version="1.0.0" />
     <PackageReference Include="DataArc.Orchestrator" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DataArc.Orchestration.Framework.Demo.Application.Domain\DataArc.Orchestration.Framework.Demo.Application.Domain.csproj" />
   </ItemGroup>
   
 </Project>
