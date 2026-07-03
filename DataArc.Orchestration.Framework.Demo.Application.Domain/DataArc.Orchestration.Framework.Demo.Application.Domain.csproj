@@ -10,7 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Modules\Finance\Enities\" />
+    <Folder Include="Finance\Enities\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DataArc.Orchestration.Framework.Demo.Application.Domain.SharedKernel\DataArc.Orchestration.Framework.Demo.Application.Domain.SharedKernel.csproj" />
   </ItemGroup>
 
 </Project>

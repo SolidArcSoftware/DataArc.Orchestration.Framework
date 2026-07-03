@@ -1,0 +1,7 @@
+﻿namespace DataArc.Orchestration.Framework.Demo.Application.Domain.SharedKernel
+{
+    public interface IPolicy<TContext>
+    {
+        PolicyResult Apply(TContext context);
+    }
+}
