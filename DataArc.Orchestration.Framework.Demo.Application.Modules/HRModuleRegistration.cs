@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using DataArc.Orchestration.Framework.Demo.Application.Features.HR;
-using DataArc.Orchestration.Framework.Demo.Application.Features.HR.EmployeeImports.Services;
 using DataArc.Orchestration.Framework.Demo.Application.Modules.HR.Adapters;
 using DataArc.Orchestration.Framework.Demo.Application.UseCases.HR;
 using DataArc.Orchestration.Framework.Demo.Application.UseCases.HR.Ports;
@@ -30,9 +29,6 @@ namespace DataArc.Orchestration.Framework.Demo.Application.Modules
 
             // HR Use Cases
             services.AddHRUseCases();
-
-            // HR Worker(s)
-            services.TryAddSingleton<IHrImportWorkQueue, HrImportWorkQueue>();
 
             return services;
         }

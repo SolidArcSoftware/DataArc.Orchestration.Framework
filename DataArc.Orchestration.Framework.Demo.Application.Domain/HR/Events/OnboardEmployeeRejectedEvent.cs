@@ -2,8 +2,5 @@
 
 namespace DataArc.Orchestration.Framework.Demo.Application.Domain.HR.Events
 {
-    public class EmployeeOnboardingRejectedEvent : IDomainEvent
-    {
-        public EmployeeOnboardingRejectedEvent() { }
-    }
+    public record OnboardEmployeeRejectedEvent(string? Reason) : IDomainEvent;
 }

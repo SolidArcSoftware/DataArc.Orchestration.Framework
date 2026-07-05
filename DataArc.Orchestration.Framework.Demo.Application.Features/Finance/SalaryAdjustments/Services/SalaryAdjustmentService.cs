@@ -1,9 +1,6 @@
 ﻿using DataArc.Observer;
 using DataArc.Orchestration.Framework.Demo.Application.Domain.Modules.Finance.Policies;
-using DataArc.Orchestration.Framework.Demo.Application.Domain.Modules.Finance.Policies.Context;
-using DataArc.Orchestration.Framework.Demo.Application.Domain.Modules.Finance.ValueObjects;
 using DataArc.Orchestration.Framework.Demo.Application.Features.Finance.SalaryAdjustments.Dtos;
-using DataArc.Orchestration.Framework.Demo.Application.Features.HR.Repository;
 using DataArc.Orchestration.Framework.Demo.Application.UseCases.Modules.Finance.Ports;
 using DataArc.Orchestration.Framework.Demo.Modules.Finance.Features.SalaryAdjustments.Dtos;
 
@@ -12,18 +9,15 @@ namespace DataArc.Orchestration.Framework.Demo.Modules.Finance.Features.SalaryAd
     public class SalaryAdjustmentService : ISalaryAdjustmentService
     {
 
-        private readonly IHRRepository _hrRepository;
         private readonly IFinanceOrchestrationPort _financeOrchestrationPort;
         private readonly ISalaryAdjustmentPolicy _salaryAdjustmentPolicy;
         private readonly IObservableEventHandler _observableEventHandler;
 
         public SalaryAdjustmentService(
-           IHRRepository hRRepository,
            IFinanceOrchestrationPort financeOrchestrationPort,
            ISalaryAdjustmentPolicy salaryAdjustmentPolicy,
            IObservableEventHandler observableEventHandler)
         {
-            _hrRepository = hRRepository;
             _financeOrchestrationPort = financeOrchestrationPort;
             _salaryAdjustmentPolicy = salaryAdjustmentPolicy;
             _observableEventHandler = observableEventHandler;

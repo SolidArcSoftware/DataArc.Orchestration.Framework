@@ -6,6 +6,7 @@ namespace DataArc.Orchestration.Framework.Demo.Application.UseCases.HR.Ports
     public interface IHROrchestrationPort
     {
         Task<ImportEmployeesOutput> ImportEmployeesDataAsync(ImportEmployeesInput input);
+        Task<PrepareEmployeeOnbardingOutput> PrepareEmployeeOnboardingAsync(PrepareEmployeeOnboardingInput input);
         Task<OnboardEmployeeOutput> OnboardEmployeeAsync(OnboardEmployeeInput input);
     }
 }

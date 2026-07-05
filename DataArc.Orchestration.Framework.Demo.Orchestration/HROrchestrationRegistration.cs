@@ -10,6 +10,8 @@ namespace DataArc.Orchestration.Framework.Demo.Orchestration
         {
             services.AddDataArcOrchestrator(orchestrators => {
                 orchestrators.Add<ImportEmployeesDataOrchestrator>();
+                orchestrators.Add<PrepareEmployeeOnboardingOrchestrator>();
+                orchestrators.Add<OnboardEmployeeOrchestrator>();
             });
 
             return services;

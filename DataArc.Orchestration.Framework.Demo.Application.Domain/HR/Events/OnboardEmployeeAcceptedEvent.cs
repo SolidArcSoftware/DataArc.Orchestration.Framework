@@ -2,5 +2,5 @@
 
 namespace DataArc.Orchestration.Framework.Demo.Application.Domain.HR.Events
 {
-    public record ImportEmployeeDataRequestAcceptedEvent(int ImportEmployeeCount, int ImportBatchSize) : IDomainEvent;
+    public record class OnboardEmployeeAcceptedEvent(string? Reason) : IDomainEvent;
 }

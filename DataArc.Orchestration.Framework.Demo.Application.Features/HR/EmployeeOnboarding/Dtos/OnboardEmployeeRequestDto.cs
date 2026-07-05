@@ -2,10 +2,9 @@
 {
     public sealed class OnboardEmployeeRequestDto
     {
-        public int EmployeeId { get; set; }
-        public decimal AnnualSalary { get; set; }
-        public string CurrencyCode { get; set; } = string.Empty;
-        public string Reason { get; set; } = string.Empty;
-        public DateTime EffectiveOnUtc { get; set; }
+        public int EmployeeId { get; set; } = 1;
+        public decimal AnnualSalary { get; set; } = 85_000;
+        public string CurrencyCode { get; set; } = "USD";
+        public string Reason { get; set; } = "Demo employee onboarding";
     }
 }

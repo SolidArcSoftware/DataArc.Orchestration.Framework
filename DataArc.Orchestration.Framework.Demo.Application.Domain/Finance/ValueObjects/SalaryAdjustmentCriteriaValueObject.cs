@@ -15,7 +15,6 @@
             SalaryThreshold = salaryThreshold;
             BatchSize = batchSize;
         }
-
         public bool IsValid =>
             SalaryAdjustmentBaseRate > 0 &&
             SalaryThreshold > 0 &&
