@@ -10,7 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Finance\Enities\" />
+    <Compile Remove="Finance\Enities\**" />
+    <EmbeddedResource Remove="Finance\Enities\**" />
+    <None Remove="Finance\Enities\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Finance\Entities\" />
   </ItemGroup>
 
   <ItemGroup>

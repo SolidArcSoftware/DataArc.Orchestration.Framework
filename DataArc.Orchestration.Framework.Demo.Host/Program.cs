@@ -2,8 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-using DataArc.Orchestration.Framework.Demo.Application.Modules.Finance;
-using DataArc.Orchestration.Framework.Demo.Persistence;
+using DataArc.Orchestration.Framework.Demo.Application.Modules;
 
 var host = Host
     .CreateDefaultBuilder(args)
@@ -16,15 +15,10 @@ var host = Host
             .Build();
 
         services
-            .AddFinanceModule(configurationManager)
-            .AddHostedService<FinanceWorker>();
+            .AddHRModule(configurationManager)
+            .AddHostedService<HrWorkerProcess>();
     })
     .Build();
 
 using var scope = host.Services.CreateScope();
-await DemoDatabaseInitializer.InitializeAsync(scope.ServiceProvider);
 await host.RunAsync();
-
-Console.WriteLine();
-Console.WriteLine("Press any key to exit.");
-Console.ReadKey();

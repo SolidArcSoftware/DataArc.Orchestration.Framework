@@ -12,7 +12,6 @@ namespace DataArc.Orchestration.Framework.Demo.Application.Features.Finance
         {
             // Policies
             services.TryAddScoped<ISalaryAdjustmentPolicy, SalaryAdjustmentPolicy>();
-
             // Application Services
             services.TryAddScoped<ISalaryAdjustmentService, SalaryAdjustmentService>();
 

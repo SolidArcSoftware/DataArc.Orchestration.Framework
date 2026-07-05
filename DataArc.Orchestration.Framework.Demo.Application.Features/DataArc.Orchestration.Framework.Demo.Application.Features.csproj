@@ -35,8 +35,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DataArc.Orchestration.Framework.Demo.Application.Domain\DataArc.Orchestration.Framework.Demo.Application.Domain.csproj" />
     <ProjectReference Include="..\DataArc.Orchestration.Framework.Demo.Application.UseCases\DataArc.Orchestration.Framework.Demo.Application.UseCases.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="HR\EmployeeImports\Dtos\" />
   </ItemGroup>
 
 </Project>

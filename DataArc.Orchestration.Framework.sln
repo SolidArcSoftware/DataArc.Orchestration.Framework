@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataArc.Orchestration.Frame
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataArc.Orchestration.Framework.Demo.Application.UseCases", "DataArc.Orchestration.Framework.Demo.Application.UseCases\DataArc.Orchestration.Framework.Demo.Application.UseCases.csproj", "{AD0F93A6-0EC2-2CF1-C4AF-9658C29991A9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{DA698950-F65E-4D05-AF27-55E10DCF494B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
