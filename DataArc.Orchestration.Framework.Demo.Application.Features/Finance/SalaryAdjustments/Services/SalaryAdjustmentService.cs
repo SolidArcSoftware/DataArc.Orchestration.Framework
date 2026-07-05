@@ -1,9 +1,6 @@
 ﻿using DataArc.Observer;
 using DataArc.Orchestration.Framework.Demo.Application.Domain.Modules.Finance.Policies;
-using DataArc.Orchestration.Framework.Demo.Application.Domain.Modules.Finance.Policies.Context;
-using DataArc.Orchestration.Framework.Demo.Application.Domain.Modules.Finance.ValueObjects;
 using DataArc.Orchestration.Framework.Demo.Application.Features.Finance.SalaryAdjustments.Dtos;
-using DataArc.Orchestration.Framework.Demo.Application.Modules.Finance.UseCases;
 using DataArc.Orchestration.Framework.Demo.Application.UseCases.Modules.Finance.Ports;
 using DataArc.Orchestration.Framework.Demo.Modules.Finance.Features.SalaryAdjustments.Dtos;
 
@@ -11,6 +8,7 @@ namespace DataArc.Orchestration.Framework.Demo.Modules.Finance.Features.SalaryAd
 {
     public class SalaryAdjustmentService : ISalaryAdjustmentService
     {
+
         private readonly IFinanceOrchestrationPort _financeOrchestrationPort;
         private readonly ISalaryAdjustmentPolicy _salaryAdjustmentPolicy;
         private readonly IObservableEventHandler _observableEventHandler;
@@ -27,42 +25,49 @@ namespace DataArc.Orchestration.Framework.Demo.Modules.Finance.Features.SalaryAd
 
         public async Task<List<SalaryAdjustmentCandidateResponseDto>> ProcessEmployeeSalaryAdjustmentsAsync(SalaryAdjustmentCandidateRequestDto request)
         {
-            var result = await _financeOrchestrationPort.PrepareTopRatedEmployeesAsync(
-                new PrepareTopRatedEmployeesInput(request.Rating));
+            ////No orchestration call via port
+            //var result = await _financeOrchestrationPort.PrepareTopRatedEmployeesAsync(
+            //    new PrepareTopRatedEmployeesInput(request.Rating));
 
-            var salaryAdjustmentCriteria = new SalaryAdjustmentCriteriaValueObject(
-                request.SalaryAdjustmentBaseRate,
-                request.SalaryThreshold,
-                request.BatchSize);
+            //var result = await _hrRepository.GetSalaryAdjustmentCandidatesAsync(
+            //    request.SalaryThreshold,
+            //    request.Rating);
 
-            foreach (var employee in result.PrepareTopRatedEmployees)
-            {
-                var salaryAdjustment = new SalaryAdjustmentValueObject(
-                    employee.EmployeeId,
-                    employee.Name,
-                    employee.Surname,
-                    employee.CurrentSalary,
-                    employee.Rating);
+            //var salaryAdjustmentCriteria = new SalaryAdjustmentCriteriaValueObject(
+            //    result.SalaryAdjustmentBaseRate,
+            //    result.SalaryThreshold,
+            //    result.BatchSize);
 
-                var policyContext = new SalaryAdjustmentPolicyContext(
-                    salaryAdjustment,
-                    salaryAdjustmentCriteria);
+            //foreach (var employee in result.PrepareTopRatedEmployees)
+            //{
+            //    var salaryAdjustment = new SalaryAdjustmentValueObject(
+            //        employee.EmployeeId,
+            //        employee.Name,
+            //        employee.Surname,
+            //        employee.CurrentSalary,
+            //        employee.Rating);
 
-                var policyResult = _salaryAdjustmentPolicy.Apply(policyContext);
+            //    var policyContext = new SalaryAdjustmentPolicyContext(
+            //        salaryAdjustment,
+            //        salaryAdjustmentCriteria);
 
-                await _observableEventHandler.DispatchAsync(policyResult.DomainEvents);
-            }
+            //    var policyResult = _salaryAdjustmentPolicy.Apply(policyContext);
 
-            return result.PrepareTopRatedEmployees
-                .Select(employee => new SalaryAdjustmentCandidateResponseDto
-                {
-                    //EmployeeId = employee.EmployeeId,
-                    //Name = employee.Name,
-                    //Surname = employee.Surname,
-                    //CurrentSalary = employee.CurrentSalary,
-                    //Rating = employee.Rating
-                })
-                .ToList();
+            //    await _observableEventHandler.DispatchAsync(policyResult.DomainEvents);
+            //}
+
+            //return result.PrepareTopRatedEmployees
+            //    .Select(employee => new SalaryAdjustmentCandidateResponseDto
+            //    {
+            //        EmployeeId = employee.EmployeeId,
+            //        Name = employee.Name,
+            //        Surname = employee.Surname,
+            //        CurrentSalary = employee.CurrentSalary,
+            //        Rating = employee.Rating
+            //    })
+            //    .ToList();
+
+            return new();
         }
     }
 }

@@ -44,6 +44,6 @@ namespace DataArc.Orchestration.Framework.Demo.Persistence.DbModels
         public string? Status { get; set; }
 
         [Column("Rating", Order = 11, TypeName = "float")]
-        public double? Rating { get; set; }
+        public double Rating { get; set; }
     }
 }

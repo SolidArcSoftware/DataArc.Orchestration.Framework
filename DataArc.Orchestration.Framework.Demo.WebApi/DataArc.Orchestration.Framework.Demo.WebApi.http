@@ -1,0 +1,6 @@
+@DataArc.Orchestration.Framework.Demo.WebApi_HostAddress = http://localhost:5261
+
+GET {{DataArc.Orchestration.Framework.Demo.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
