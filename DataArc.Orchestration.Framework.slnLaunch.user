@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "DataArc.Orchestration.Framework.Demo.Host\\DataArc.Orchestration.Framework.Demo.Host.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Presentation\\DataArc.Orchestration.Framework.Demo\\DataArc.Orchestration.Framework.Demo.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFrameworks>net6.0;net7.0;net8.0;net9.0;net10.0</TargetFrameworks>
+    <NoWarn>$(NoWarn);NETSDK1138</NoWarn>
+    <NuGetAuditLevel>critical</NuGetAuditLevel>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\DataArc.Orchestration.Framework.Demo.Application.UseCases\DataArc.Orchestration.Framework.Demo.Application.UseCases.csproj" />
+    <ProjectReference Include="..\DataArc.Orchestration.Framework.Demo.Persistence\DataArc.Orchestration.Framework.Demo.Persistence.csproj" />
+  </ItemGroup>
+
+</Project>
