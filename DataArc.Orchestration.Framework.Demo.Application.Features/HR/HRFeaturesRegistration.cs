@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace DataArc.Orchestration.Framework.Demo.Application.Features.HR
 {
-    public static class HRRegistration
+    public static class HRFeaturesRegistration
     {
         public static IServiceCollection AddHRFeatures(this IServiceCollection services)
         {

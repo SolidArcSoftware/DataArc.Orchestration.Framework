@@ -11,27 +11,13 @@ namespace DataArc.Orchestration.Framework.Demo.Application.Domain.HR.Policies
             if (context == null || context.OnBoardEmployeeValueObject == null)
                 throw new InvalidOperationException("Onboarding policy context was null");
 
-            List<IDomainEvent> domainEvents = new List<IDomainEvent>();
-
             var employee = context.OnBoardEmployeeValueObject;
 
-            if (!employee.IsActive)
-                domainEvents.Add(new OnboardEmployeeRejectedEvent("Only active employees can be onboarded."));
-
-            if (employee.HasPayrollRecord)
-                domainEvents.Add(new OnboardEmployeeRejectedEvent("Employee already has a payroll record."));
-
-            if (employee.HasAccessRequest)
-                domainEvents.Add(new OnboardEmployeeRejectedEvent("Employee already has an access request."));
-
-            if (employee.HasOnboardingTask)
-                domainEvents.Add(new OnboardEmployeeRejectedEvent("Employee already has an onboarding task."));
-
-            if (domainEvents.Count > 0)
+            if (employee.IsOnboarded)
             {
                 return PolicyResult.Fail(
                     "Employee onboarding policy rejected the request.",
-                    domainEvents.ToArray());
+                    new OnboardEmployeeRejectedEvent("The employee has already been onboarded"));
             }
 
             return PolicyResult.Success(

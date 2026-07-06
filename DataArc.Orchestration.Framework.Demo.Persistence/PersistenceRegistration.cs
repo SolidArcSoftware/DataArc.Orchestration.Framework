@@ -13,7 +13,6 @@ using DataArc.Orchestration.Framework.Demo.Persistence.Contracts;
 using DataArc.Orchestration.Framework.Demo.Persistence.Database.Seeder;
 using DataArc.Orchestration.Framework.Demo.Persistence.DbContexts;
 using DataArc.Orchestration.Framework.Demo.Persistence.Database.Creator;
-using DataArc.Orchestration.Framework.Demo.Persistence.Database.DBContexts;
 
 namespace DataArc.Orchestration.Framework.Demo.Persistence
 {
@@ -45,10 +44,6 @@ namespace DataArc.Orchestration.Framework.Demo.Persistence
                                 .UseLoggerFactory(factory));
 
                          context.AddDbExecutionContext<IOperationsDbContext, OperationsDbContext>(options => options
-                                .UseSqlServer(configurationManager.GetConnectionString("DataArcDemoDb"))
-                                .UseLoggerFactory(factory));
-
-                         context.AddDbExecutionContext<ISharedContext, SharedContext>(options => options
                                 .UseSqlServer(configurationManager.GetConnectionString("DataArcDemoDb"))
                                 .UseLoggerFactory(factory));
                      });

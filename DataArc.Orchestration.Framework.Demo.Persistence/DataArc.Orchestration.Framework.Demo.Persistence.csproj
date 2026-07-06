@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0;net7.0;net8.0;net9.0;net10.0</TargetFrameworks>
     <NoWarn>$(NoWarn);NETSDK1138</NoWarn>
+    <NuGetAuditLevel>critical</NuGetAuditLevel>
     <NuGetAudit>false</NuGetAudit>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -46,6 +47,13 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="[10.0.0,11.0.0)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="[10.0.0,11.0.0)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="[10.0.0,11.0.0)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Contracts\ISharedContext.cs" />
+    <Compile Remove="Database\DBModels\EmployeeAccessRequest.cs" />
+    <Compile Remove="Database\DBModels\EmployeeOnboardingTask.cs" />
+    <Compile Remove="Database\DBModels\EmployeePayrollRecord.cs" />
   </ItemGroup>
 
   <ItemGroup>

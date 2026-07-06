@@ -19,11 +19,11 @@ namespace DataArc.Orchestration.Framework.Demo.Persistence.DbModels
         [Column("EmployeeSalary", Order = 3, TypeName = "decimal(33,2)")]
         public decimal Salary { get; set; }
 
-        [ForeignKey(nameof(Employer))]
         [Column("EmployerId", Order = 4)]
         public int EmployerId { get; set; }
 
-        public Employer Employer { get; set; }
+        [ForeignKey(nameof(EmployerId))]
+        public Employer? Employer { get; set; }
 
         [Column("PositionOrder", Order = 5)]
         public int? Order { get; set; }
@@ -40,8 +40,8 @@ namespace DataArc.Orchestration.Framework.Demo.Persistence.DbModels
         [Column("Notes", Order = 9, TypeName = "nvarchar(500)")]
         public string? Notes { get; set; }
 
-        [Column("Status", Order = 10, TypeName = "varchar(20)")]
-        public string? Status { get; set; }
+        [Column("OnBoardingStatus", Order = 10, TypeName = "varchar(20)")]
+        public string? OnBoardingStatus { get; set; }
 
         [Column("Rating", Order = 11, TypeName = "float")]
         public double Rating { get; set; }

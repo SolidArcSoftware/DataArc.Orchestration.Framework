@@ -19,5 +19,10 @@ namespace DataArc.Orchestration.Framework.Demo.Persistence.DbModels
         public DateTimeOffset RequestedOnUtc { get; set; }
 
         public DateTimeOffset? CompletedOnUtc { get; set; }
+
+        public int EmployeeId { get; set; }
+
+        [ForeignKey(nameof(EmployeeId))]
+        public Employee? Employee { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace DataArc.Orchestration.Framework.Demo.Persistence.Utils
                     CreatedUtc = DateTime.UtcNow.AddDays(-rand.Next(0, 1000)),
                     LastUpdatedUtc = DateTime.UtcNow,
                     Notes = $"This is a sample note for record {i}.",
-                    Status = GetRandomStatus(rand),
+                    OnBoardingStatus = GetRandomStatus(rand),
                     Rating = Math.Round(rand.NextDouble() * 4 + 1, 2)
                 };
 

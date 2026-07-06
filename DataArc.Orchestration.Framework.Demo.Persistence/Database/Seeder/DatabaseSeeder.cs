@@ -33,7 +33,7 @@ namespace DataArc.Orchestration.Framework.Demo.Persistence.Database.Seeder
                 CreatedUtc = createdUtc,
                 LastUpdatedUtc = null,
                 Notes = "Seed employee used for the onboarding orchestration workflow.",
-                Status = "Active",
+                OnBoardingStatus = "Pending",
                 Rating = 4.8
             };
 

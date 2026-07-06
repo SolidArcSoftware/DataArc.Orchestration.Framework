@@ -1,19 +1,23 @@
 ﻿using DataArc.Core;
 using DataArc.Orchestrator;
-using DataArc.Orchestration.Framework.Demo.Persistence.Contracts;
-using DataArc.Orchestration.Framework.Demo.Persistence.Database.DBModels;
-using DataArc.Orchestration.Framework.Demo.Persistence.DbModels;
 using DataArc.Orchestration.Framework.Demo.Application.UseCases.HR.Orchestration.Input;
 using DataArc.Orchestration.Framework.Demo.Application.UseCases.HR.Orchestration.Ouput;
+using DataArc.Orchestration.Framework.Demo.Persistence.Contracts;
+using DataArc.Orchestration.Framework.Demo.Persistence.DbModels;
 
 namespace DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators
 {
     public sealed class OnboardEmployeeOrchestrator
         : Orchestrator<OnboardEmployeeInput, OnboardEmployeeOutput>
     {
+        private readonly IQueryFactory _queryFactory;
         private readonly ICommandFactory _commandFactory;
-        public OnboardEmployeeOrchestrator(ICommandFactory commandFactory)
+
+        public OnboardEmployeeOrchestrator(
+            IQueryFactory queryFactory,
+            ICommandFactory commandFactory)
         {
+            _queryFactory = queryFactory;
             _commandFactory = commandFactory;
         }
 
@@ -23,10 +27,57 @@ namespace DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators
         {
             try
             {
+                var employeeOnboardingStateQuery = await _queryFactory
+                    .CreateQueryAsync();
+
+                var employeeOnboardingStates = await employeeOnboardingStateQuery
+                    .UseDbExecutionContext<IHrDbContext, Employee>(employee =>
+                        employee.Id == input.EmployeeId)
+                    .JoinLeft<IFinanceDbContext, PayrollRecord>(
+                        bag => bag.Get<Employee>()!.Id,
+                        payrollRecord => payrollRecord.EmployeeId)
+                    .JoinLeft<IItDbContext, AccessRequest>(
+                        bag => bag.Get<Employee>()!.Id,
+                        accessRequest => accessRequest.EmployeeId)
+                    .JoinLeft<IOperationsDbContext, OnboardingTask>(
+                        bag => bag.Get<Employee>()!.Id,
+                        onboardingTask => onboardingTask.EmployeeId)
+                    .Select(bag => new
+                    {
+                        Employee = bag.Get<Employee>(),
+                        PayrollRecord = bag.Get<PayrollRecord>(),
+                        AccessRequest = bag.Get<AccessRequest>(),
+                        OnboardingTask = bag.Get<OnboardingTask>()
+                    })
+                    .ToListAsync();
+
+                var employeeOnboardingState = employeeOnboardingStates
+                    .FirstOrDefault();
+
+                if (employeeOnboardingState?.Employee == null)
+                {
+                    output.IsSuccess = false;
+                    output.FailureReason = "Employee onboarding could not be started because the employee was not found.";
+
+                    return output;
+                }
+
+                if (employeeOnboardingState.PayrollRecord != null
+                    || employeeOnboardingState.AccessRequest != null
+                    || employeeOnboardingState.OnboardingTask != null)
+                {
+                    output.IsSuccess = false;
+                    output.FailureReason = "Employee onboarding could not be started because onboarding records already exist.";
+                    output.PayrollRecordId = employeeOnboardingState!.PayrollRecord!.Id;
+
+                    return output;
+                }
+
                 var createdOnUtc = DateTimeOffset.UtcNow;
 
                 var payrollRecord = new PayrollRecord
                 {
+                    EmployeeId = input.EmployeeId,
                     AnnualSalary = input.AnnualSalary,
                     CurrencyCode = input.CurrencyCode,
                     CreatedOnUtc = createdOnUtc,
@@ -35,8 +86,9 @@ namespace DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators
 
                 var accessRequest = new AccessRequest
                 {
+                    EmployeeId = input.EmployeeId,
                     AccessLevel = "Standard",
-                    EmailAddress = $"employee-{input.EmployeeId}@solidarcsoftware.demo",
+                    EmailAddress = $"employee-{input.EmployeeId}@solidarcsoftware.com",
                     RequestStatus = "Requested",
                     RequestedOnUtc = createdOnUtc,
                     CompletedOnUtc = null
@@ -44,6 +96,7 @@ namespace DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators
 
                 var onboardingTask = new OnboardingTask
                 {
+                    EmployeeId = input.EmployeeId,
                     TaskName = "Complete employee onboarding",
                     TaskStatus = "Created",
                     CreatedOnUtc = createdOnUtc,
@@ -51,71 +104,38 @@ namespace DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators
                     CompletedOnUtc = null
                 };
 
-                var onboardingSetupCommandBuilder = await _commandFactory
+                employeeOnboardingState.Employee.OnBoardingStatus = "Active";
+
+                var onboardingCommandBuilder = await _commandFactory
                     .CreateTransactionalCommandBuilderAsync();
 
-                onboardingSetupCommandBuilder
+                onboardingCommandBuilder
                     .UseDbExecutionContext<IFinanceDbContext>()
-                        .Add(payrollRecord);
+                    .Add(payrollRecord);
 
-                onboardingSetupCommandBuilder
+                onboardingCommandBuilder
                     .UseDbExecutionContext<IItDbContext>()
-                        .Add(accessRequest);
+                    .Add(accessRequest);
 
-                onboardingSetupCommandBuilder
+                onboardingCommandBuilder
                     .UseDbExecutionContext<IOperationsDbContext>()
-                        .Add(onboardingTask);
+                    .Add(onboardingTask);
 
-                var onboardingSetupCommand = await onboardingSetupCommandBuilder
+                onboardingCommandBuilder
+                    .UseDbExecutionContext<IHrDbContext>()
+                    .Update(employeeOnboardingState.Employee);
+
+                var onboardingCommand = await onboardingCommandBuilder
                     .BuildAsync();
 
-                var onboardingSetupResult = await onboardingSetupCommand
+                var onboardingResult = await onboardingCommand
                     .CommitTransactionAsync();
 
-                if (!onboardingSetupResult.Success)
+                if (!onboardingResult.Success)
                 {
                     output.IsSuccess = false;
-                    output.FailureReason = onboardingSetupResult.Exception?.Message
-                        ?? "Employee onboarding setup records could not be created.";
-
-                    return output;
-                }
-
-                var employeePayrollRecord = new EmployeePayrollRecord
-                {
-                    EmployeeId = input.EmployeeId,
-                    PayrollRecordId = payrollRecord.Id
-                };
-
-                var employeeAccessRequest = new EmployeeAccessRequest
-                {
-                    EmployeeId = input.EmployeeId,
-                    AccessRequestId = accessRequest.Id
-                };
-
-                var employeeOnboardingTask = new EmployeeOnboardingTask
-                {
-                    EmployeeId = input.EmployeeId,
-                    OnBoardingTaskId = onboardingTask.Id
-                };
-
-                var employeeOnboardingLinksCommandBuilder = await _commandFactory
-                    .CreateTransactionalCommandBuilderAsync();
-
-                employeeOnboardingLinksCommandBuilder
-                    .UseDbExecutionContext<ISharedContext>()
-                        .Add(employeePayrollRecord)
-                        .Add(employeeAccessRequest)
-                        .Add(employeeOnboardingTask);
-
-                var employeeOnboardingLinksCommand = await employeeOnboardingLinksCommandBuilder.BuildAsync();
-                var employeeOnboardingLinksResult = await employeeOnboardingLinksCommand.CommitTransactionAsync();
-
-                if (!employeeOnboardingLinksResult.Success)
-                {
-                    output.IsSuccess = false;
-                    output.FailureReason = employeeOnboardingLinksResult.Exception?.Message
-                        ?? "Employee onboarding link records could not be created.";
+                    output.FailureReason = onboardingResult.Exception?.Message
+                        ?? "Employee onboarding transaction could not be committed.";
 
                     return output;
                 }
@@ -123,7 +143,6 @@ namespace DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators
                 output.IsSuccess = true;
                 output.FailureReason = null;
                 output.PayrollRecordId = payrollRecord.Id;
-                output.EmployeePayrollRecordId = employeePayrollRecord.Id;
 
                 return output;
             }

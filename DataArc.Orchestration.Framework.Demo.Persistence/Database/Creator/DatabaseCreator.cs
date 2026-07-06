@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
 
 using DataArc.Core;
-using DataArc.Orchestration.Framework.Demo.Persistence.Database.DBContexts;
 using DataArc.Orchestration.Framework.Demo.Persistence.DbContexts;
 
 namespace DataArc.Orchestration.Framework.Demo.Persistence.Database.Creator
@@ -35,7 +34,7 @@ namespace DataArc.Orchestration.Framework.Demo.Persistence.Database.Creator
                 .IncludeDbContext<ItDbContext>()
                 .IncludeDbContext<OperationsDbContext>()
                 .IncludeDbContext<FinanceDbContext>()
-                .IncludeDbContext<SharedContext>()
+                //.IncludeDbContext<SharedContext>()
                 .Build(generateScripts: true, applyChanges: true);
 
             demoDatabase.ExecuteCreate();
@@ -57,7 +56,7 @@ namespace DataArc.Orchestration.Framework.Demo.Persistence.Database.Creator
                 .IncludeDbContext<ItDbContext>()
                 .IncludeDbContext<OperationsDbContext>()
                 .IncludeDbContext<FinanceDbContext>()
-                .IncludeDbContext<SharedContext>()
+                //.IncludeDbContext<SharedContext>()
                 .Build(applyChanges: true);
 
             demoDatabase.ExecuteDrop();
