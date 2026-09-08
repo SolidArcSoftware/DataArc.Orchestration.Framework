@@ -1,11 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using DataArc.Orchestration.Framework.Demo.Persistence.Contracts;
 using DataArc.Orchestration.Framework.Demo.Persistence.DbModels;
 
 namespace DataArc.Orchestration.Framework.Demo.Persistence.DbContexts
 {
-    internal class OperationsDbContext : DbContext, IOperationsDbContext
+    public class OperationsDbContext : DbContext
     {
         public OperationsDbContext(DbContextOptions<OperationsDbContext> dbContextOptions) 
             : base(dbContextOptions) { }

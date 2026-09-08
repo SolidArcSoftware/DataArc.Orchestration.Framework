@@ -1,51 +1,41 @@
-﻿using DataArc.Orchestration.Framework.Demo.Application.UseCases.HR.Orchestration.Input;
-using DataArc.Orchestration.Framework.Demo.Application.UseCases.HR.Orchestration.Ouput;
-using DataArc.Orchestration.Framework.Demo.Persistence.Contracts;
+﻿using DataArc.EntityFrameworkCore;
+using DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators.Input;
+using DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators.Ouput;
+using DataArc.Orchestration.Framework.Demo.Persistence.DbContexts;
 using DataArc.Orchestration.Framework.Demo.Persistence.Utils;
-
-using DataArc.Core;
 using DataArc.Orchestrator;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators
 {
-    public class ImportEmployeesDataOrchestrator : Orchestrator<ImportEmployeesInput, ImportEmployeesOutput>
+    public sealed class ImportEmployeesDataOrchestrator
+        : Orchestrator<ImportEmployeesInput, ImportEmployeesOutput>
     {
-        readonly ICommandFactory _commandFactory;
+        private readonly IDbContextFactory<HrDbContext> _hrDbContextFactory;
 
-        public ImportEmployeesDataOrchestrator(ICommandFactory commandFactory)
+        public ImportEmployeesDataOrchestrator(
+            IDbContextFactory<HrDbContext> hrDbContextFactory)
         {
-            _commandFactory = commandFactory;
+            _hrDbContextFactory = hrDbContextFactory;
         }
 
-        public override async Task<ImportEmployeesOutput> ExecuteAsync(ImportEmployeesInput input, ImportEmployeesOutput output)
+        public override async Task<ImportEmployeesOutput> ExecuteAsync(
+            ImportEmployeesInput input,
+            ImportEmployeesOutput output)
         {
-            try
-            {
-                var importTransactionalCommand = await _commandFactory
-                    .CreateTransactionalCommandAsync();
+            await using var dbContext =
+                await _hrDbContextFactory.CreateDbContextAsync();
 
-                var importData = SeedDataGenerator
-                    .GenerateHrSeedData(input.ImportEmployeeCount);
+            var importData = SeedDataGenerator
+                .GenerateHrSeedData(input.ImportEmployeeCount);
 
-                var importTransaction = importTransactionalCommand
-                    .UseDbExecutionContext<IHrDbContext>()
-                    .AddBulk(importData, input.ImportBatchSize);
+            await dbContext.AddBulkAsync(
+                importData,
+                input.ImportBatchSize);
 
-                var transactionResult 
-                    = await importTransaction.CommitTransactionAsync();
+            output.TotalRecordsProcessed = importData.Count;
 
-                if (!transactionResult.Success)
-                {
-                    output.Errors = transactionResult?.Errors;
-                }
-
-                output.TotalRecordsProcessed = transactionResult!.TotalAffected;
-                return output;
-            }
-            catch
-            {
-                throw;
-            }
+            return output;
         }
     }
 }

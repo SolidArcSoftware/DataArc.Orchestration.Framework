@@ -1,13 +1,12 @@
-﻿using DataArc.Orchestration.Framework.Demo.Application.UseCases.HR.Orchestration.Input;
-using DataArc.Orchestration.Framework.Demo.Application.UseCases.HR.Orchestration.Ouput;
-using DataArc.Orchestration.Framework.Demo.Application.UseCases.HR.Ports;
-using DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators;
-
+﻿using DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators;
+using DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators.Input;
+using DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators.Ouput;
+using DataArc.Orchestration.Framework.Demo.Orchestration.HR.Ports;
 using DataArc.Orchestrator;
 
 namespace DataArc.Orchestration.Framework.Demo.Application.Modules.HR.Adapters
 {
-    internal class HROrchestrationAdapter : IHROrchestration
+    internal class HROrchestrationAdapter : IHROrchestrationPort
     {
         private readonly IOrchestrator _orchestrator;
         public HROrchestrationAdapter(IOrchestrator orchestrator)

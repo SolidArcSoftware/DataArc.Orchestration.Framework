@@ -1,3 +1,5 @@
+using DataArc.Core;
+using DataArc.EntityFrameworkCore;
 using DataArc.Orchestration.Framework.Demo.Application.Features.HR.EmployeeImports.Services;
 using DataArc.Orchestration.Framework.Demo.Application.Features.HR.EmployeeOnboarding.Dtos;
 using DataArc.Orchestration.Framework.Demo.Application.Features.HR.EmployeeOnboarding.Services;
@@ -17,7 +19,12 @@ builder.Services.AddSwaggerGen(options =>
     options.SchemaFilter<OnboardEmployeeRequestExampleSchemaFilter>();
 });
 
-// DataArc demo modules
+// DataArc Registration
+builder.Services
+    .AddDataArcCore(options => options.UseServerKey())
+    .ConfigureDataArc(options => options.UseEntityFrameworkCore());
+
+// HR Module
 builder.Services.AddHRModule(builder.Configuration);
 
 var app = builder.Build();

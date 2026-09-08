@@ -1,13 +1,14 @@
 ﻿using DataArc.Orchestration.Framework.Demo.Application.Features.HR.EmployeeImports.Dtos;
-using DataArc.Orchestration.Framework.Demo.Application.UseCases.HR.Orchestration.Input;
-using DataArc.Orchestration.Framework.Demo.Application.UseCases.HR.Ports;
+using DataArc.Orchestration.Framework.Demo.Application.Features.HR.EmployeeImports.Services;
+using DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators.Input;
+using DataArc.Orchestration.Framework.Demo.Orchestration.HR.Ports;
 
-namespace DataArc.Orchestration.Framework.Demo.Application.Features.HR.EmployeeImports.Services
+namespace DataArc.Orchestration.Framework.Demo.Application.Modules.HR.Services
 {
     internal sealed class EmployeeImportsService : IEmployeeImportsService
     {
-        readonly IHROrchestration _hROrchestration;
-        public EmployeeImportsService(IHROrchestration hROrchestration)
+        readonly IHROrchestrationPort _hROrchestration;
+        public EmployeeImportsService(IHROrchestrationPort hROrchestration)
         {
             _hROrchestration = hROrchestration;
         }

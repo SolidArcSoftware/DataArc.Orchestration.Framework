@@ -1,6 +1,6 @@
 ﻿using DataArc.Orchestrator;
 
-namespace DataArc.Orchestration.Framework.Demo.Application.UseCases.HR.Orchestration.Input
+namespace DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators.Input
 {
     public sealed record OnboardEmployeeInput(
       int EmployeeId,

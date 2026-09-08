@@ -1,6 +1,6 @@
 ﻿using DataArc.Orchestrator;
 
-namespace DataArc.Orchestration.Framework.Demo.Application.UseCases.HR.Orchestration.Ouput
+namespace DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators.Ouput
 {
     public sealed class OnboardEmployeeOutput : IOrchestratorOutput
     {

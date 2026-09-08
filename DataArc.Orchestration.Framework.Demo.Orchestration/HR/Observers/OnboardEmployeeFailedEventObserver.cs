@@ -1,10 +1,9 @@
 ﻿using DataArc.Observer;
 using DataArc.Orchestration.Framework.Demo.Application.Domain.HR.Events;
 
-namespace DataArc.Orchestration.Framework.Demo.Application.UseCases.HR.Observers
+namespace DataArc.Orchestration.Framework.Demo.Orchestration.HR.Observers
 {
-    public sealed class OnboardEmployeeRejectedEventHandler
-       : IEventObserver<OnboardEmployeeRejectedEvent>
+    internal class OnboardEmployeeFailedEventObserver : IEventObserver<OnboardEmployeeRejectedEvent>
     {
         public Task HandleAsync(OnboardEmployeeRejectedEvent evt)
         {

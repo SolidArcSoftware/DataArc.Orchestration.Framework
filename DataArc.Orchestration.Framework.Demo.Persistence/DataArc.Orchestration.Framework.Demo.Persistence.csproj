@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net7.0;net8.0;net9.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>net10.0</TargetFrameworks>
     <NoWarn>$(NoWarn);NETSDK1138</NoWarn>
     <NuGetAuditLevel>critical</NuGetAuditLevel>
     <NuGetAudit>false</NuGetAudit>
@@ -9,55 +9,23 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="[6.0.0,7.0.0)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="[6.0.0,7.0.0)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="[6.0.0,7.0.0)" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="[6.0.0,7.0.0)" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="[6.0.0,7.0.0)" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="[7.0.0,8.0.0)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="[7.0.0,8.0.0)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="[7.0.0,8.0.0)" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="[7.0.0,8.0.0)" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="[7.0.0,8.0.0)" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="[8.0.0,9.0.0)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="[8.0.0,9.0.0)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="[8.0.0,9.0.0)" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="[8.0.0,9.0.0)" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="[8.0.0,9.0.0)" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="[9.0.0,10.0.0)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="[9.0.0,10.0.0)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="[9.0.0,10.0.0)" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="[9.0.0,10.0.0)" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="[9.0.0,10.0.0)" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="[10.0.0,11.0.0)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="[10.0.0,11.0.0)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="[10.0.0,11.0.0)" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="[10.0.0,11.0.0)" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="[10.0.0,11.0.0)" />
+  <ItemGroup>
+    <PackageReference Include="DataArc.EntityFrameworkCore" Version="1.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.11" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Contracts\ISharedContext.cs" />
     <Compile Remove="Database\DBModels\EmployeeAccessRequest.cs" />
     <Compile Remove="Database\DBModels\EmployeeOnboardingTask.cs" />
     <Compile Remove="Database\DBModels\EmployeePayrollRecord.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DataArc.EntityFrameworkCore" Version="[1.0.0,2.0.0)" />
+    <ProjectReference Include="..\DataArc.Orchestration.Framework.Demo.Application.Features\DataArc.Orchestration.Framework.Demo.Application.Features.csproj" />
   </ItemGroup>
 
 </Project>

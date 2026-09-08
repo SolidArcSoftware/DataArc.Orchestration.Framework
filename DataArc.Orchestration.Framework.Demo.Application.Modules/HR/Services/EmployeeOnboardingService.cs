@@ -3,22 +3,23 @@ using DataArc.Orchestration.Framework.Demo.Application.Domain.HR.Policies;
 using DataArc.Orchestration.Framework.Demo.Application.Domain.HR.Policies.Contexts;
 using DataArc.Orchestration.Framework.Demo.Application.Domain.HR.ValueObjects;
 using DataArc.Orchestration.Framework.Demo.Application.Features.HR.EmployeeOnboarding.Dtos;
-using DataArc.Orchestration.Framework.Demo.Application.Features.HR.Repository;
-using DataArc.Orchestration.Framework.Demo.Application.UseCases.HR.Orchestration.Input;
-using DataArc.Orchestration.Framework.Demo.Application.UseCases.HR.Ports;
+using DataArc.Orchestration.Framework.Demo.Application.Features.HR.EmployeeOnboarding.Services;
+using DataArc.Orchestration.Framework.Demo.Application.Features.HR.Repositories;
+using DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators.Input;
+using DataArc.Orchestration.Framework.Demo.Orchestration.HR.Ports;
 
-namespace DataArc.Orchestration.Framework.Demo.Application.Features.HR.EmployeeOnboarding.Services
+namespace DataArc.Orchestration.Framework.Demo.Application.Modules.HR.Services
 {
     internal sealed class EmployeeOnboardingService : IEmployeeOnboardingService
     {
         private readonly IHRRepository _hRRepository;
-        private readonly IHROrchestration _HROrchestration;
+        private readonly IHROrchestrationPort _HROrchestration;
         private readonly IEmployeeOnboardingPolicy _onboardEmployeePolicy;
         private readonly IObservableEventHandler _observableEventHandler;
 
         public EmployeeOnboardingService(
             IHRRepository hRRepository,
-            IHROrchestration HROrchestration,
+            IHROrchestrationPort HROrchestration,
             IObservableEventHandler observableEventHandler,
             IEmployeeOnboardingPolicy onboardEmployeePolicy)
         {
@@ -28,8 +29,7 @@ namespace DataArc.Orchestration.Framework.Demo.Application.Features.HR.EmployeeO
             _observableEventHandler = observableEventHandler;
         }
 
-        public async Task<OnboardEmployeeResponseDto> OnboardEmployeeAsync(
-            OnboardEmployeeRequestDto request)
+        public async Task<OnboardEmployeeResponseDto> OnboardEmployeeAsync(OnboardEmployeeRequestDto request)
         {
             var employee = await _hRRepository.GetEmployeeOnboardingCandidate(request.EmployeeId);
 
@@ -43,7 +43,7 @@ namespace DataArc.Orchestration.Framework.Demo.Application.Features.HR.EmployeeO
                 };
             }
 
-            var onboardingCandidate = new OnBoardEmployeeValueObject(status: employee.Status);
+            var onboardingCandidate = new OnBoardEmployeeValueObject(status: employee.OnBoardingStatus);
 
             var policyContext = new OnboardEmployeePolicyContext(
                 onboardingCandidate);
@@ -59,13 +59,12 @@ namespace DataArc.Orchestration.Framework.Demo.Application.Features.HR.EmployeeO
                 return new OnboardEmployeeResponseDto
                 {
                     IsSuccess = false,
-                    EmployeeId = employee.EmployeeId,
-                    Name = employee.EmployeeName,
-                    Surname = employee.EmployeeNameSurname,
-                    Status = employee.Status,
+                    FailureReason = policyResult.Message,
+                    EmployeeId = employee.Id,
+                    Name = employee.Name,
+                    Surname = employee.Surname,
                     Rating = employee.Rating,
-                    Salary = employee.EmployeeSalary,
-                    FailureReason = policyResult.Message
+                    Salary = employee.Salary,
                 };
             }
 
@@ -81,12 +80,11 @@ namespace DataArc.Orchestration.Framework.Demo.Application.Features.HR.EmployeeO
             {
                 IsSuccess = true,
                 FailureReason = null,
-                EmployeeId = employee.EmployeeId,
-                Name = employee.EmployeeName,
-                Surname = employee.EmployeeNameSurname,
-                Status = employee.Status,
+                EmployeeId = employee.Id,
+                Name = employee.Name,
+                Surname = employee.Surname,
                 Rating = employee.Rating,
-                Salary = request.AnnualSalary,
+                Salary = employee.Salary,
                 PayrollRecordId = output.PayrollRecordId,
                 EmployeePayrollRecordId = output.EmployeePayrollRecordId
             };

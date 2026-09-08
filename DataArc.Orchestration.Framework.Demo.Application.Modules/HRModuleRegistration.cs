@@ -1,15 +1,16 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using DataArc.Orchestration.Framework.Demo.Application.Domain.HR.Policies;
+using DataArc.Orchestration.Framework.Demo.Application.Features.HR.EmployeeImports.Services;
+using DataArc.Orchestration.Framework.Demo.Application.Features.HR.EmployeeOnboarding.Services;
+using DataArc.Orchestration.Framework.Demo.Application.Features.HR.Repositories;
+using DataArc.Orchestration.Framework.Demo.Application.Modules.HR.Adapters;
+using DataArc.Orchestration.Framework.Demo.Application.Modules.HR.Repositories;
+using DataArc.Orchestration.Framework.Demo.Application.Modules.HR.Services;
+using DataArc.Orchestration.Framework.Demo.Orchestration;
+using DataArc.Orchestration.Framework.Demo.Orchestration.HR.Ports;
+using DataArc.Orchestration.Framework.Demo.Persistence;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-
-using DataArc.Orchestration.Framework.Demo.Application.Features.HR;
-using DataArc.Orchestration.Framework.Demo.Application.Modules.HR.Adapters;
-using DataArc.Orchestration.Framework.Demo.Application.UseCases.HR;
-using DataArc.Orchestration.Framework.Demo.Application.UseCases.HR.Ports;
-using DataArc.Orchestration.Framework.Demo.Orchestration;
-using DataArc.Orchestration.Framework.Demo.Persistence;
-using DataArc.Orchestration.Framework.Demo.Application.Modules.HR.Repository;
-using DataArc.Orchestration.Framework.Demo.Application.Features.HR.Repository;
 
 namespace DataArc.Orchestration.Framework.Demo.Application.Modules
 {
@@ -20,20 +21,21 @@ namespace DataArc.Orchestration.Framework.Demo.Application.Modules
             // Persistence
             services.AddPersistence(configurationManager);
 
-            // HR Queries
-            services.TryAddScoped<IHRRepository, HRRepository>();
+            // Repositories
+            services.AddScoped<IHRRepository, HRRepository>();
 
             // HR Orchestration
             services.AddHROrchestration();
 
             // HR Orchestration Port & Adapters
-            services.TryAddScoped<IHROrchestration, HROrchestrationAdapter>();
+            services.AddScoped<IHROrchestrationPort, HROrchestrationAdapter>();
 
-            // HR features
-            services.AddHRFeatures();
+            // HR Policies
+            services.AddScoped<IEmployeeOnboardingPolicy, OnboardEmployeePolicy>();
 
-            // HR Use Cases
-            services.AddHRUseCases();
+            // HR features / services
+            services.TryAddScoped<IEmployeeImportsService, EmployeeImportsService>();
+            services.TryAddScoped<IEmployeeOnboardingService, EmployeeOnboardingService>();
 
             return services;
         }

@@ -31,12 +31,12 @@ namespace DataArc.Orchestration.Framework.Demo.Persistence
 
             Console.WriteLine("Database created successfully.");
 
-            var seedDatabaseCommand = await databaseSeeder.SeedDatabaseAsync();
-            if (!seedDatabaseCommand.Success) {
-                throw new InvalidOperationException($"Seed database command failed, {seedDatabaseCommand.Message}");
+            var rowsAffected = await databaseSeeder.SeedDatabaseAsync();
+            if (rowsAffected == 0) {
+                throw new InvalidOperationException($"Seed database command failed");
             }                
 
-            Console.WriteLine($"Database seeded successfully. ({seedDatabaseCommand.TotalAffected}) Records affected");
+            Console.WriteLine($"Database seeded successfully. ({rowsAffected}) Records affected");
         }
     }
 }

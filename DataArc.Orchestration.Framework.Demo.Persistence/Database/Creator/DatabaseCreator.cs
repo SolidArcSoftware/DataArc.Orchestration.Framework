@@ -34,7 +34,6 @@ namespace DataArc.Orchestration.Framework.Demo.Persistence.Database.Creator
                 .IncludeDbContext<ItDbContext>()
                 .IncludeDbContext<OperationsDbContext>()
                 .IncludeDbContext<FinanceDbContext>()
-                //.IncludeDbContext<SharedContext>()
                 .Build(generateScripts: true, applyChanges: true);
 
             demoDatabase.ExecuteCreate();
@@ -56,7 +55,6 @@ namespace DataArc.Orchestration.Framework.Demo.Persistence.Database.Creator
                 .IncludeDbContext<ItDbContext>()
                 .IncludeDbContext<OperationsDbContext>()
                 .IncludeDbContext<FinanceDbContext>()
-                //.IncludeDbContext<SharedContext>()
                 .Build(applyChanges: true);
 
             demoDatabase.ExecuteDrop();

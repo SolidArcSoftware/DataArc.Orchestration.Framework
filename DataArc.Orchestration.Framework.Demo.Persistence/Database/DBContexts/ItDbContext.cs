@@ -1,11 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 using DataArc.Orchestration.Framework.Demo.Persistence.DbModels;
-using DataArc.Orchestration.Framework.Demo.Persistence.Contracts;
 
 namespace DataArc.Orchestration.Framework.Demo.Persistence.DbContexts
 {
-    internal class ItDbContext : DbContext, IItDbContext
+    public class ItDbContext : DbContext
     {
         public ItDbContext(DbContextOptions<ItDbContext> dbContextOptions) 
             : base(dbContextOptions) { }
