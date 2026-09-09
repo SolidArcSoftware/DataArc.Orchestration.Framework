@@ -27,6 +27,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataArc.Orchestration.Framework.Demo.WebApi", "DataArc.Orchestration.Framework.Demo.WebApi\DataArc.Orchestration.Framework.Demo.WebApi.csproj", "{52581841-AA3D-445C-A09B-108BDCA58C41}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9D6BCB9A-C495-4608-9CD8-EF010B77BA61}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -76,6 +76,15 @@ namespace DataArc.Orchestration.Framework.Demo.Application.Modules.HR.Services
                     request.Reason,
                     DateTimeOffset.UtcNow));
 
+            if (!output.IsSuccess)
+            {
+                return new OnboardEmployeeResponseDto
+                {
+                    IsSuccess = false,
+                    FailureReason = output.FailureReason,
+                };
+            }
+
             return new OnboardEmployeeResponseDto
             {
                 IsSuccess = true,

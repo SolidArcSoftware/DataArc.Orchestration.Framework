@@ -1,160 +1,210 @@
-﻿using DataArc.Core;
-using DataArc.Orchestrator;
-using DataArc.Orchestration.Framework.Demo.Persistence.DbModels;
-using DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators.Ouput;
+﻿using DataArc.Orchestrator;
 using DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators.Input;
+using DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators.Ouput;
 using DataArc.Orchestration.Framework.Demo.Persistence.DbContexts;
+using DataArc.Orchestration.Framework.Demo.Persistence.DbModels;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace DataArc.Orchestration.Framework.Demo.Orchestration.HR.Orchestrators
 {
     public sealed class OnboardEmployeeOrchestrator
         : Orchestrator<OnboardEmployeeInput, OnboardEmployeeOutput>
     {
-        private readonly IQueryFactory _queryFactory;
-        private readonly ICommandFactory _commandFactory;
+        private readonly IDbContextFactory<FinanceDbContext> _financeDbContextFactory;
+        private readonly IDbContextFactory<HrDbContext> _hrDbContextFactory;
+        private readonly IDbContextFactory<ItDbContext> _itDbContextFactory;
+        private readonly IDbContextFactory<OperationsDbContext> _operationsDbContextFactory;
 
         public OnboardEmployeeOrchestrator(
-            IQueryFactory queryFactory,
-            ICommandFactory commandFactory)
+            IDbContextFactory<FinanceDbContext> financeDbContextFactory,
+            IDbContextFactory<HrDbContext> hrDbContextFactory,
+            IDbContextFactory<ItDbContext> itDbContextFactory,
+            IDbContextFactory<OperationsDbContext> operationsDbContextFactory)
         {
-            _queryFactory = queryFactory;
-            _commandFactory = commandFactory;
+            _financeDbContextFactory = financeDbContextFactory;
+            _hrDbContextFactory = hrDbContextFactory;
+            _itDbContextFactory = itDbContextFactory;
+            _operationsDbContextFactory = operationsDbContextFactory;
         }
 
         public override async Task<OnboardEmployeeOutput> ExecuteAsync(
             OnboardEmployeeInput input,
             OnboardEmployeeOutput output)
         {
-            //try
-            //{
-            //    var employeeOnboardingStateQuery = await _queryFactory
-            //        .CreateQueryAsync();
+            try
+            {
+                await using var hrDbContext =
+                    await _hrDbContextFactory.CreateDbContextAsync();
 
-            //    var employeeOnboardingStates = await employeeOnboardingStateQuery
-            //        .UseDbExecutionContext<HrDbContext, Employee>(employee =>
-            //            employee.Id == input.EmployeeId)
-            //        .JoinLeft<FinanceDbContext, PayrollRecord>(
-            //            bag => bag.Get<Employee>()!.Id,
-            //            payrollRecord => payrollRecord.EmployeeId)
-            //        .JoinLeft<ItDbContext, AccessRequest>(
-            //            bag => bag.Get<Employee>()!.Id,
-            //            accessRequest => accessRequest.EmployeeId)
-            //        .JoinLeft<OperationsDbContext, OnboardingTask>(
-            //            bag => bag.Get<Employee>()!.Id,
-            //            onboardingTask => onboardingTask.EmployeeId)
-            //        .Select(bag => new
-            //        {
-            //            Employee = bag.Get<Employee>(),
-            //            PayrollRecord = bag.Get<PayrollRecord>(),
-            //            AccessRequest = bag.Get<AccessRequest>(),
-            //            OnboardingTask = bag.Get<OnboardingTask>()
-            //        })
-            //        .ToListAsync();
+                await using var financeDbContext =
+                    await _financeDbContextFactory.CreateDbContextAsync();
 
-            //    var employeeOnboardingState = employeeOnboardingStates
-            //        .FirstOrDefault();
+                await using var itDbContext =
+                    await _itDbContextFactory.CreateDbContextAsync();
 
-            //    if (employeeOnboardingState?.Employee == null)
-            //    {
-            //        output.IsSuccess = false;
-            //        output.FailureReason = "Employee onboarding could not be started because the employee was not found.";
+                await using var operationsDbContext =
+                    await _operationsDbContextFactory.CreateDbContextAsync();
 
-            //        return output;
-            //    }
+                var employee = await hrDbContext
+                    .Set<Employee>()
+                    .FirstOrDefaultAsync(employee =>
+                        employee.Id == input.EmployeeId);
 
-            //    if (employeeOnboardingState.PayrollRecord != null
-            //        || employeeOnboardingState.AccessRequest != null
-            //        || employeeOnboardingState.OnboardingTask != null)
-            //    {
-            //        output.IsSuccess = false;
-            //        output.FailureReason = "Employee onboarding could not be started because onboarding records already exist.";
-            //        output.PayrollRecordId = employeeOnboardingState!.PayrollRecord!.Id;
+                if (employee is null)
+                {
+                    output.IsSuccess = false;
+                    output.FailureReason =
+                        "Employee onboarding could not be started because the employee was not found.";
 
-            //        return output;
-            //    }
+                    return output;
+                }
 
-            //    var createdOnUtc = DateTimeOffset.UtcNow;
+                var payrollRecord = await financeDbContext
+                    .Set<PayrollRecord>()
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(record =>
+                        record.EmployeeId == input.EmployeeId);
 
-            //    var payrollRecord = new PayrollRecord
-            //    {
-            //        EmployeeId = input.EmployeeId,
-            //        AnnualSalary = input.AnnualSalary,
-            //        CurrencyCode = input.CurrencyCode,
-            //        CreatedOnUtc = createdOnUtc,
-            //        IsActive = true
-            //    };
+                var accessRequest = await itDbContext
+                    .Set<AccessRequest>()
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(request =>
+                        request.EmployeeId == input.EmployeeId);
 
-            //    var accessRequest = new AccessRequest
-            //    {
-            //        EmployeeId = input.EmployeeId,
-            //        AccessLevel = "Standard",
-            //        EmailAddress = $"employee-{input.EmployeeId}@solidarcsoftware.com",
-            //        RequestStatus = "Requested",
-            //        RequestedOnUtc = createdOnUtc,
-            //        CompletedOnUtc = null
-            //    };
+                var onboardingTask = await operationsDbContext
+                    .Set<OnboardingTask>()
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(task =>
+                        task.EmployeeId == input.EmployeeId);
 
-            //    var onboardingTask = new OnboardingTask
-            //    {
-            //        EmployeeId = input.EmployeeId,
-            //        TaskName = "Complete employee onboarding",
-            //        TaskStatus = "Created",
-            //        CreatedOnUtc = createdOnUtc,
-            //        DueDateUtc = input.EffectiveOnUtc,
-            //        CompletedOnUtc = null
-            //    };
+                if (payrollRecord is not null
+                    || accessRequest is not null
+                    || onboardingTask is not null)
+                {
+                    output.IsSuccess = false;
+                    output.FailureReason =
+                        "Employee onboarding could not be started because onboarding records already exist.";
 
-            //    employeeOnboardingState.Employee.OnBoardingStatus = "Active";
+                    if (payrollRecord is not null)
+                    {
+                        output.PayrollRecordId = payrollRecord.Id;
+                    }
 
-            //    var onboardingCommandBuilder = await _commandFactory
-            //        .CreateTransactionalCommandBuilderAsync();
+                    return output;
+                }
 
-            //    onboardingCommandBuilder
-            //        .UseDbExecutionContext<FinanceDbContext>()
-            //        .Add(payrollRecord);
+                var createdOnUtc = DateTimeOffset.UtcNow;
 
-            //    onboardingCommandBuilder
-            //        .UseDbExecutionContext<ItDbContext>()
-            //        .Add(accessRequest);
+                payrollRecord = new PayrollRecord
+                {
+                    EmployeeId = input.EmployeeId,
+                    AnnualSalary = input.AnnualSalary,
+                    CurrencyCode = input.CurrencyCode,
+                    CreatedOnUtc = createdOnUtc,
+                    IsActive = true
+                };
 
-            //    onboardingCommandBuilder
-            //        .UseDbExecutionContext<OperationsDbContext>()
-            //        .Add(onboardingTask);
+                accessRequest = new AccessRequest
+                {
+                    EmployeeId = input.EmployeeId,
+                    AccessLevel = "Standard",
+                    EmailAddress =
+                        $"employee-{input.EmployeeId}@solidarcsoftware.com",
+                    RequestStatus = "Requested",
+                    RequestedOnUtc = createdOnUtc,
+                    CompletedOnUtc = null
+                };
 
-            //    onboardingCommandBuilder
-            //        .UseDbExecutionContext<HrDbContext>()
-            //        .Update(employeeOnboardingState.Employee);
+                onboardingTask = new OnboardingTask
+                {
+                    EmployeeId = input.EmployeeId,
+                    TaskName = "Complete employee onboarding",
+                    TaskStatus = "Created",
+                    CreatedOnUtc = createdOnUtc,
+                    DueDateUtc = input.EffectiveOnUtc,
+                    CompletedOnUtc = null
+                };
 
-            //    var onboardingCommand = await onboardingCommandBuilder
-            //        .BuildAsync();
+                employee.OnBoardingStatus = "Active";
 
-            //    var onboardingResult = await onboardingCommand
-            //        .CommitTransactionAsync();
+                /*
+                 * All four DbContexts represent boundaries within the
+                 * same physical relational database.
+                 *
+                 * Share the HR context's connection so that all four
+                 * contexts can participate in one local transaction.
+                 */
+                var connection =
+                    hrDbContext.Database.GetDbConnection();
 
-            //    if (!onboardingResult.Success)
-            //    {
-            //        output.IsSuccess = false;
-            //        output.FailureReason = onboardingResult.Exception?.Message
-            //            ?? "Employee onboarding transaction could not be committed.";
+                financeDbContext.Database.SetDbConnection(
+                    connection,
+                    contextOwnsConnection: false);
 
-            //        return output;
-            //    }
+                itDbContext.Database.SetDbConnection(
+                    connection,
+                    contextOwnsConnection: false);
 
-            //    output.IsSuccess = true;
-            //    output.FailureReason = null;
-            //    output.PayrollRecordId = payrollRecord.Id;
+                operationsDbContext.Database.SetDbConnection(
+                    connection,
+                    contextOwnsConnection: false);
 
-            //    return output;
-            //}
-            //catch (Exception exception)
-            //{
-            //    output.IsSuccess = false;
-            //    output.FailureReason = exception.Message;
+                await using var transaction =
+                    await hrDbContext.Database.BeginTransactionAsync();
 
-            //    return output;
-            //}
+                var dbTransaction =
+                    transaction.GetDbTransaction();
 
-            throw new NotImplementedException();
+                await financeDbContext.Database.UseTransactionAsync(
+                    dbTransaction);
+
+                await itDbContext.Database.UseTransactionAsync(
+                    dbTransaction);
+
+                await operationsDbContext.Database.UseTransactionAsync(
+                    dbTransaction);
+
+                try
+                {
+                    financeDbContext
+                        .Set<PayrollRecord>()
+                        .Add(payrollRecord);
+
+                    itDbContext
+                        .Set<AccessRequest>()
+                        .Add(accessRequest);
+
+                    operationsDbContext
+                        .Set<OnboardingTask>()
+                        .Add(onboardingTask);
+
+                    await financeDbContext.SaveChangesAsync();
+                    await itDbContext.SaveChangesAsync();
+                    await operationsDbContext.SaveChangesAsync();
+                    await hrDbContext.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+                }
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+
+                output.IsSuccess = true;
+                output.FailureReason = null;
+                output.PayrollRecordId = payrollRecord.Id;
+
+                return output;
+            }
+            catch (Exception exception)
+            {
+                output.IsSuccess = false;
+                output.FailureReason = exception.Message;
+
+                return output;
+            }
         }
     }
 }
