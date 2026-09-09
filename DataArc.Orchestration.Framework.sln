@@ -13,8 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Orchestration", "Orchestration", "{7BCAA116-1844-433B-9E69-9E9DC7540030}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Host", "Host", "{B83674A9-289D-4647-B5E9-CDEC845EBDC1}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataArc.Orchestration.Framework.Demo.Application.Domain", "DataArc.Orchestration.Framework.Demo.Application.Domain\DataArc.Orchestration.Framework.Demo.Application.Domain.csproj", "{107D2535-525E-D208-2154-70993485D178}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataArc.Orchestration.Framework.Demo.Application.Domain.SharedKernel", "DataArc.Orchestration.Framework.Demo.Application.Domain.SharedKernel\DataArc.Orchestration.Framework.Demo.Application.Domain.SharedKernel.csproj", "{235854B3-E774-156D-02E2-13E09AC3E24F}"
