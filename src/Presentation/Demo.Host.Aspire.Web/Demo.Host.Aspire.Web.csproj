@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Demo.Host.Aspire.ServiceDefaults\Demo.Host.Aspire.ServiceDefaults.csproj" />
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\images\" />
+    <ProjectReference Include="..\..\Host\Demo.Host.Aspire\Demo.Host.Aspire.ServiceDefaults\Demo.Host.Aspire.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>

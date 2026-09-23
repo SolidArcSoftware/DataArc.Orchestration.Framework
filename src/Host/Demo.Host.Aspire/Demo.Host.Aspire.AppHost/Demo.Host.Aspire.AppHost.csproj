@@ -10,8 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Presentation\Demo.Host.Aspire.Web\Demo.Host.Aspire.Web.csproj" />
     <ProjectReference Include="..\..\..\Presentation\Demo.WebApi\Demo.WebApi.csproj" />
-    <ProjectReference Include="..\Demo.Host.Aspire.Web\Demo.Host.Aspire.Web.csproj" />
   </ItemGroup>
 
 </Project>
