@@ -1,0 +1,320 @@
+﻿@page "/"
+
+<PageTitle>DataArc Orchestration Demo</PageTitle>
+
+<div class="container-fluid px-0">
+    <section class="mb-5">
+        <div class="p-4 p-lg-5 rounded-3 border bg-body-tertiary">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-8">
+                    <h1 class="display-5 fw-semibold mb-3">DataArc Orchestration Demo</h1>
+                    <p class="lead mb-3">
+                        Application orchestration inside the process. Application hosting and observability around it.
+                    </p>
+                    <p class="mb-4">
+                        This .NET 10 solution demonstrates explicit application workflows, policy-driven decisions,
+                        high-volume EF Core execution and multi-DbContext SQL Server composition with DataArc,
+                        hosted and observable through .NET Aspire.
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <a class="btn btn-primary" href="/employees/import">Import Employees</a>
+                        <a class="btn btn-outline-primary" href="/onboarding">Employee Onboarding</a>
+                        <a class="btn btn-outline-secondary"
+                           href="https://www.dataarc.dev"
+                           target="_blank"
+                           rel="noopener noreferrer">DataArc.dev</a>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h2 class="h5">Two kinds of orchestration</h2>
+                            <hr />
+                            <div class="mb-3">
+                                <strong>.NET Aspire</strong>
+                                <div class="text-body-secondary small">
+                                    Hosts applications, provides service discovery, health, logs and telemetry.
+                                </div>
+                            </div>
+                            <div>
+                                <strong>DataArc</strong>
+                                <div class="text-body-secondary small">
+                                    Orchestrates application workflows, policies, events and coordinated persistence.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h2 class="h4">Presentation</h2>
+                        <p class="text-body-secondary">Razor Components + ASP.NET Core Web API</p>
+                        <ul class="mb-0">
+                            <li>Interactive demo UI</li>
+                            <li>Swagger API surface</li>
+                            <li>Aspire service discovery</li>
+                            <li>Problem Details error boundary</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h2 class="h4">Application orchestration</h2>
+                        <p class="text-body-secondary">Policies, events and explicit workflows</p>
+                        <ul class="mb-0">
+                            <li>Thin HTTP endpoints</li>
+                            <li>Named application orchestrators</li>
+                            <li>Policy-driven workflow decisions</li>
+                            <li>Observable success/rejection events</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h2 class="h4">Data</h2>
+                        <p class="text-body-secondary">EF Core + SQL Server</p>
+                        <ul class="mb-0">
+                            <li>Five isolated DbContext models</li>
+                            <li>One normalized relational database</li>
+                            <li>Cross-context foreign keys</li>
+                            <li>Bulk and coordinated transaction execution</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h2 class="mb-3">Solution architecture</h2>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="row g-4 align-items-stretch">
+                    <div class="col-lg-3">
+                        <div class="border rounded p-3 h-100">
+                            <h3 class="h5">.NET Aspire</h3>
+                            <p class="small text-body-secondary mb-2">Development &amp; operations</p>
+                            <div class="small">
+                                AppHost<br />
+                                Service discovery<br />
+                                Health<br />
+                                Centralized logs<br />
+                                Telemetry
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-9">
+                        <div class="border rounded p-3 mb-3">
+                            <div class="d-flex flex-wrap justify-content-between gap-3">
+                                <div>
+                                    <strong>Demo.Host.Aspire.Web</strong>
+                                    <div class="small text-body-secondary">Razor Components</div>
+                                </div>
+                                <div class="align-self-center px-3">→</div>
+                                <div>
+                                    <strong>Demo.WebApi</strong>
+                                    <div class="small text-body-secondary">ASP.NET Core API</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border rounded p-3 mb-3">
+                            <strong>DataArc application workflow</strong>
+                            <div class="small text-body-secondary mt-1">
+                                Application Service → Policies → Events → Orchestration
+                            </div>
+                        </div>
+
+                        <div class="border rounded p-3">
+                            <strong>SQL Server — DataArcOrchestrationDemo</strong>
+                            <div class="small text-body-secondary mt-2">
+                                dbo / Identity &nbsp; • &nbsp; hr &nbsp; • &nbsp; finance &nbsp; • &nbsp; it &nbsp; • &nbsp; operations
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h2 class="mb-3">What the database demonstrates</h2>
+        <p>
+            A <code>DbContext</code> boundary does not have to become a relational boundary. The demo composes
+            ASP.NET Core Identity and four business contexts into one physical SQL Server database while preserving
+            schema ownership and database-enforced relationships.
+        </p>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <pre class="mb-0"><code>dbo.AspNetUsers
+      │
+      ▼
+hr.Employees
+      │
+      ├── hr.EmployeeDepartment ───► hr.Department
+      ├── finance.PayrollRecords
+      ├── it.AccessRequests
+      └── operations.OnboardingTask</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <h2 class="h4">Import Employees</h2>
+                        <p>
+                            Import 100,000 employees through DataArc's bulk/parallel EF Core execution path while
+                            continuing to use a normal factory-created <code>HrDbContext</code>.
+                        </p>
+                        <pre><code>POST /api/hr/imports</code></pre>
+                        <p class="text-body-secondary small">
+                            The page reports the number of records processed and the elapsed time.
+                        </p>
+                        <div class="mt-auto">
+                            <a class="btn btn-primary" href="/employees/import">Open Import Employees</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <h2 class="h4">Employee Onboarding</h2>
+                        <p>
+                            Coordinate HR, Finance, IT and Operations through one explicit workflow and one local
+                            SQL Server transaction.
+                        </p>
+                        <pre><code>POST /api/hr/onboarding</code></pre>
+                        <p class="text-body-secondary small">
+                            Expected business rejections, such as onboarding the same employee twice, are returned as
+                            structured API responses and displayed directly in the UI.
+                        </p>
+                        <div class="mt-auto">
+                            <a class="btn btn-primary" href="/onboarding">Open Onboarding</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h2 class="mb-3">Onboarding workflow</h2>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <pre class="mb-0"><code>Load HR employee and organizational context
+        ↓
+Evaluate onboarding policy
+        ↓
+Begin one local SQL Server transaction
+        ↓
+HR          update employee status
+Finance     create payroll record
+IT          create access request
+Operations  create onboarding task
+        ↓
+Commit atomically</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <div class="alert alert-info mb-0" role="alert">
+            <h2 class="h5 alert-heading">Demo setup</h2>
+            <p class="mb-2">
+                The onboarding walkthrough uses seeded demo data. Run the repository setup/reset step before the
+                walkthrough, especially if the seeded employee has already been onboarded.
+            </p>
+            <p class="mb-0">
+                See <code>scripts/setup.sql</code> and the repository README for the complete SQL Server setup and
+                database initialization sequence.
+            </p>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h2 class="mb-3">Explore DataArc</h2>
+        <div class="row g-3">
+            <div class="col-md-6 col-xl-3">
+                <a class="card h-100 text-decoration-none shadow-sm"
+                   href="https://www.dataarc.dev"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    <div class="card-body">
+                        <h3 class="h5">DataArc.dev</h3>
+                        <p class="text-body-secondary mb-0">Product information and documentation.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <a class="card h-100 text-decoration-none shadow-sm"
+                   href="https://github.com/SolidArcSoftware/DataArc.Orchestration.Framework"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    <div class="card-body">
+                        <h3 class="h5">Demo repository</h3>
+                        <p class="text-body-secondary mb-0">Source code, integration tests and examples.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <a class="card h-100 text-decoration-none shadow-sm"
+                   href="https://www.nuget.org/packages/DataArc.OrchestrationFramework"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    <div class="card-body">
+                        <h3 class="h5">Orchestration Framework</h3>
+                        <p class="text-body-secondary mb-0">DataArc orchestration package on NuGet.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <a class="card h-100 text-decoration-none shadow-sm"
+                   href="https://www.nuget.org/packages/DataArc.EntityFrameworkCore.SqlServer"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    <div class="card-body">
+                        <h3 class="h5">SQL Server tooling</h3>
+                        <p class="text-body-secondary mb-0">DDL composition and SQL Server-specific capabilities.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="pb-4">
+        <div class="border-top pt-4 d-flex flex-column flex-lg-row justify-content-between gap-3">
+            <div>
+                <strong>Solid Arc Software</strong>
+                <div class="text-body-secondary small">Strategize. Observe. Adapt. Provide.</div>
+            </div>
+            <div class="text-body-secondary small align-self-lg-end">
+                Multiple DbContexts can remain application boundaries without becoming relational boundaries.
+            </div>
+        </div>
+    </section>
+</div>

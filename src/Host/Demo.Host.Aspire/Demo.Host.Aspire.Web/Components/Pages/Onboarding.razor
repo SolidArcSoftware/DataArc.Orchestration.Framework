@@ -1,0 +1,89 @@
+﻿@page "/onboarding"
+@rendermode InteractiveServer
+
+<PageTitle>Employee Onboarding</PageTitle>
+
+<h1>Employee Onboarding</h1>
+
+<p>
+    Onboard an employee across HR, Finance, IT and Operations
+    using the DataArc orchestration workflow.
+</p>
+
+<div class="row">
+    <div class="col-lg-6">
+
+        <div class="mb-3">
+            <label for="employeeId" class="form-label">
+                Employee Id
+            </label>
+
+            <InputNumber id="employeeId"
+                         class="form-control"
+                         @bind-Value="EmployeeId" />
+        </div>
+
+        <div class="mb-3">
+            <label for="annualSalary" class="form-label">
+                Annual Salary
+            </label>
+
+            <InputNumber id="annualSalary"
+                         class="form-control"
+                         @bind-Value="AnnualSalary" />
+        </div>
+
+        <div class="mb-3">
+            <label for="currencyCode" class="form-label">
+                Currency
+            </label>
+
+            <InputText id="currencyCode"
+                       class="form-control"
+                       @bind-Value="CurrencyCode" />
+        </div>
+
+        <div class="mb-3">
+            <label for="reason" class="form-label">
+                Reason
+            </label>
+
+            <InputText id="reason"
+                       class="form-control"
+                       @bind-Value="Reason" />
+        </div>
+
+        <button class="btn btn-primary"
+                @onclick="OnboardEmployeeAsync"
+                disabled="@IsOnboarding">
+
+            @if (IsOnboarding)
+            {
+                <span class="spinner-border spinner-border-sm me-2"
+                      role="status"
+                      aria-hidden="true"></span>
+
+                <span>Onboarding employee...</span>
+            }
+            else
+            {
+                <span>Onboard Employee</span>
+            }
+        </button>
+
+    </div>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(SuccessMessage))
+{
+    <div class="alert alert-success mt-4" role="alert">
+        @SuccessMessage
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(ErrorMessage))
+{
+    <div class="alert alert-danger mt-4" role="alert">
+        @ErrorMessage
+    </div>
+}

@@ -1,0 +1,44 @@
+﻿@page "/employees/import"
+@rendermode InteractiveServer
+
+<PageTitle>Import Employees</PageTitle>
+
+<h1>Import Employees</h1>
+
+<p>
+    Import employee data using the DataArc bulk execution pipeline.
+</p>
+
+<div class="mb-3">
+    <button class="btn btn-primary"
+            @onclick="ImportEmployeesAsync"
+            disabled="@IsImporting">
+
+        @if (IsImporting)
+        {
+            <span class="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"></span>
+
+            <span>Importing employees...</span>
+        }
+        else
+        {
+            <span>Import Employees</span>
+        }
+    </button>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(SuccessMessage))
+{
+    <div class="alert alert-success" role="alert">
+        @SuccessMessage
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @ErrorMessage
+    </div>
+}

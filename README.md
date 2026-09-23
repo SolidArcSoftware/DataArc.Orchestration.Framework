@@ -1,223 +1,148 @@
 # DataArc Orchestration Framework Demo
 
-> A .NET 10 WebAPI demo showing explicit application orchestration, policy-driven workflows, high-performance EF Core execution, and multi-`DbContext` SQL Server composition.
+> **Application orchestration inside the process. Application hosting and observability around it.**
 
-**DataArc Orchestration Framework** gives application workflows a clear orchestration layer without replacing ASP.NET Core or Entity Framework Core.
+This .NET 10 demo shows how **DataArc** coordinates explicit application workflows across modular EF Core persistence boundaries while **.NET Aspire** hosts and observes the applications that run those workflows.
 
-This demo uses a human-resources scenario to show two complementary paths:
+The distinction is deliberate:
 
-- a high-volume employee import using the free `DataArc.EntityFrameworkCore` execution API
-- an employee onboarding workflow coordinated through DataArc orchestration and application policies
+```text
+.NET Aspire
+    hosts applications
+    provides service discovery
+    collects logs, health and telemetry
 
-The solution also includes SQL Server integration tests that compose multiple isolated `DbContext` models into one physical relational database through the commercial `DataArc.EntityFrameworkCore.SqlServer` DDL Builder.
+DataArc
+    orchestrates application workflows
+    evaluates policies
+    dispatches application events
+    coordinates EF Core work across boundaries
+```
+
+The repository uses a human-resources scenario with two visible workflows:
+
+- **Import Employees** — imports 100,000 employee records through DataArc's bulk/parallel EF Core execution path.
+- **Employee Onboarding** — coordinates HR, Finance, IT and Operations through an explicit application orchestrator and a single local SQL Server transaction.
+
+The solution also demonstrates **ASP.NET Core Identity**, multiple isolated `DbContext` models, cross-context foreign keys, schema boundaries, and DataArc's SQL Server DDL Builder composing those models into one relational database.
 
 ---
 
-## What This Demo Shows
+## What the demo proves
 
-The demo focuses on a small set of concrete ideas:
+### Application boundaries do not have to become relational boundaries
 
-1. **Explicit orchestration**
-   - API endpoints delegate use-case coordination to named orchestrators.
-   - Workflow logic does not live in controllers.
-
-2. **Policy-driven application flow**
-   - Policies decide whether a workflow may continue.
-   - The orchestration layer coordinates the result.
-
-3. **Normal EF Core remains normal EF Core**
-   - Persistence uses standard `IDbContextFactory<TContext>`.
-   - Queries use ordinary EF Core APIs.
-   - DataArc is used only where additional execution behavior is required.
-
-4. **High-volume bulk execution**
-   - The HR import endpoint uses `AsParallel()`, `AddBulk(...)`, and `SaveChangesParallelAsync()`.
-
-5. **Modular persistence boundaries**
-   - HR, Finance, IT, and Operations each own a separate `DbContext`.
-   - The contexts remain independently usable.
-
-6. **One physical relational database**
-   - The demo maps the four contexts into the same SQL Server database.
-   - The commercial DDL Builder composes the models into one database definition.
-
-7. **No-migrations DDL integration test**
-   - The integration test can generate, drop, and recreate the composed database directly from the participating `DbContext` models.
-
-The core idea is simple:
+The demo keeps independent EF Core contexts for authentication and business modules:
 
 ```text
-ASP.NET Core receives the request.
-Application services expose the use case.
-Orchestrators coordinate the workflow.
-Policies decide whether work may continue.
-EF Core owns persistence.
-DataArc adds orchestration and execution where required.
-```
-
----
-
-## Package Model
-
-The demo intentionally separates the free orchestration stack from the commercial SQL Server tooling.
-
-### DataArc.OrchestrationFramework
-
-`DataArc.OrchestrationFramework` is the top-level orchestration package used by the application/orchestration layer.
-
-Version `2.0.0` brings the free DataArc stack required by the demo, including:
-
-- `DataArc.Orchestrator`
-- `DataArc.Observer`
-- `DataArc.EntityFrameworkCore`
-
-A project that only needs the free orchestration and EF Core execution capabilities can reference:
-
-```xml
-<PackageReference Include="DataArc.OrchestrationFramework" Version="2.0.0" />
-```
-
-### DataArc.EntityFrameworkCore.SqlServer
-
-`DataArc.EntityFrameworkCore.SqlServer` contains the commercial SQL Server-specific capabilities used by this repository's integration tests, including the multi-context DDL Builder and advanced SQL Server transaction execution.
-
-The persistence/integration-test surface references:
-
-```xml
-<PackageReference Include="DataArc.EntityFrameworkCore.SqlServer" Version="2.0.0" />
-```
-
-`DataArc.EntityFrameworkCore.SqlServer` carries `DataArc.EntityFrameworkCore` as a dependency.
-
----
-
-## Demo Topology
-
-The demo contains four persistence modules:
-
-```text
-HR
-Finance
-IT
-Operations
-```
-
-Each module has its own `DbContext`:
-
-```text
+AuthDbContext
 HrDbContext
 FinanceDbContext
 ItDbContext
 OperationsDbContext
 ```
 
-All four contexts target the same physical SQL Server database:
+All five participate in one SQL Server database while retaining their own responsibilities.
 
 ```text
-DataArcDemoDb
+dbo.AspNetUsers
+      │
+      ▼
+hr.Employees
+      │
+      ├── hr.EmployeeDepartment ───► hr.Department
+      ├── finance.PayrollRecords
+      ├── it.AccessRequests
+      └── operations.OnboardingTask
 ```
 
-This is deliberate.
+Schemas remain explicit:
 
-A `DbContext` boundary does not have to become a relational boundary.
+```text
+dbo          ASP.NET Core Identity
+hr           employees, employers, departments
+finance      payroll
+it           access requests
+operations   onboarding tasks
+```
 
-The contexts remain isolated application/persistence boundaries while the physical database can still be composed as one relational model.
+The database remains normalized and database-enforced foreign keys cross context and schema boundaries where the model requires them.
 
 ---
 
-## Domain Scenario
-
-The demo models employee import and onboarding.
-
-The onboarding workflow works across records owned by the four modules:
+## Solution architecture
 
 ```text
-Employee          -> HR
-PayrollRecord     -> Finance
-AccessRequest     -> IT
-OnboardingTask    -> Operations
+┌──────────────────────────── .NET Aspire ────────────────────────────┐
+│                                                                    │
+│   Demo.Host.Aspire.Web ───────────────► Demo.WebApi                │
+│        Razor Components                 ASP.NET Core API            │
+│              │                                │                    │
+│              │                                ▼                    │
+│              │                     DataArc application workflow     │
+│              │                         Policies / Events            │
+│              │                         Orchestration                │
+│              │                                │                    │
+│              │                                ▼                    │
+│              │                    EF Core persistence modules       │
+│              │               HR / Finance / IT / Operations        │
+│              │                                │                    │
+│              └────────────────────────────────┼────────────────────┤
+│                                               ▼                    │
+│                              SQL Server — one relational database   │
+│                                                                    │
+│   service discovery • health • logs • traces • telemetry           │
+└────────────────────────────────────────────────────────────────────┘
 ```
 
-`EmployeeId` is used as the cross-module correlation key.
+### Aspire's responsibility
 
-Conceptually:
+`.NET Aspire` is the **application/infrastructure orchestration layer** for the demo. The AppHost starts the frontend and API, supplies service discovery, exposes health information, and centralizes development-time logs and telemetry.
 
-```text
-HR owns the employee.
-Finance owns payroll data.
-IT owns access requests.
-Operations owns onboarding tasks.
-The orchestrator coordinates the use case.
-```
+### DataArc's responsibility
+
+`DataArc` is the **in-process application orchestration layer**. It coordinates use cases after a request reaches the API. It does not replace Aspire, ASP.NET Core, or EF Core.
+
+That distinction is the central reason Aspire is included in this repository.
 
 ---
 
-## HR Import Flow
+## Demo workflows
 
-The import endpoint creates demo HR data and persists it through the free DataArc EF Core execution API.
+### 1. Import Employees
 
-Endpoint:
+Open **Import Employees** in the Razor frontend or call:
 
 ```text
 POST /api/hr/imports
 ```
 
-The current orchestration path uses a normal EF Core factory-created `DbContext`:
+The demo generates 100,000 employee records and executes the import through the free DataArc EF Core execution API.
+
+The core execution path remains an ordinary factory-created `DbContext` enhanced with DataArc execution behavior:
 
 ```csharp
-public override async Task<ImportEmployeesOutput> ExecuteAsync(
-    ImportEmployeesInput input,
-    ImportEmployeesOutput output)
-{
-    await using var dbContext =
-        await _hrDbContextFactory.CreateDbContextAsync();
+await using var dbContext =
+    await _hrDbContextFactory.CreateDbContextAsync();
 
-    var importData = SeedDataGenerator
-        .GenerateHrSeedData(input.ImportEmployeeCount);
-
-    await dbContext.AsParallel()
-        .AddBulk(importData, input.ImportBatchSize)
-        .SaveChangesParallelAsync();
-
-    output.TotalRecordsProcessed = importData.Count;
-
-    return output;
-}
+await dbContext.AsParallel()
+    .AddBulk(importData, input.ImportBatchSize)
+    .SaveChangesParallelAsync();
 ```
 
-A successful import of 100,000 records returns:
-
-```json
-{
-  "totalRecordsProcessed": 100000,
-  "errors": []
-}
-```
-
-The important boundary is:
+The UI reports the result directly, for example:
 
 ```text
-IDbContextFactory<HrDbContext>
-        |
-        v
-normal HrDbContext
-        |
-        v
-DataArc AsParallel()
-        |
-        v
-bulk execution
+100,000 employees imported in 1,351 milliseconds.
 ```
 
-DataArc does not replace the `DbContext`.
+This workflow demonstrates high-volume EF Core execution without replacing `DbContext` or normal EF Core usage.
 
 ---
 
-## Employee Onboarding Flow
+### 2. Employee Onboarding
 
-The onboarding endpoint coordinates the application workflow across HR, Finance, IT, and Operations.
-
-Example endpoint:
+Open **Onboarding** in the Razor frontend or call:
 
 ```text
 POST /api/hr/onboarding
@@ -237,28 +162,104 @@ Example request:
 The workflow is intentionally explicit:
 
 ```text
-Load current onboarding state.
-Apply the onboarding policy.
-Reject invalid or duplicate onboarding.
-Create the required module-owned records.
-Update the employee onboarding state.
-Return a structured orchestration result.
+Load the HR employee and organizational context
+        ↓
+Evaluate the onboarding policy
+        ↓
+Reject invalid or duplicate onboarding
+        ↓
+Begin one local SQL Server transaction
+        ↓
+HR          update employee status
+Finance     create payroll record
+IT          create access request
+Operations  create onboarding task
+        ↓
+Commit atomically
 ```
 
-The controller/API endpoint does not own that workflow. It delegates to the application service and orchestration layer.
+The participating business contexts are:
+
+```text
+HrDbContext
+FinanceDbContext
+ItDbContext
+OperationsDbContext
+```
+
+All four represent boundaries inside the same physical relational database. The workflow shares the connection and transaction so the onboarding operation commits or rolls back as one local unit of work.
+
+Expected business rejections are returned through the API contract and shown by the UI. For example, attempting to onboard the same employee twice produces a clear rejection rather than an infrastructure failure.
 
 ---
 
-## Multi-Context DDL Builder
+## Policy and event flow
 
-This repository is also the natural demo for DataArc's multi-`DbContext` DDL Builder.
+The application layer keeps decisions and coordination explicit:
 
-The SQL Server integration test composes the four isolated EF Core models into one database definition:
+```text
+Request
+   ↓
+Application Service
+   ↓
+Orchestrator
+   ├──► Policy evaluation
+   ├──► Persistence coordination
+   └──► Application events / observers
+   ↓
+Structured response
+```
+
+The API surface stays thin. Persistence remains in EF Core. Workflow coordination stays in the orchestration layer.
+
+---
+
+## ASP.NET Core Identity composition
+
+Authentication data uses standard ASP.NET Core Identity with an integer key through `AuthDbContext`.
+
+Identity remains in the default `dbo` schema for this release:
+
+```text
+dbo.AspNetUsers
+dbo.AspNetRoles
+dbo.AspNetRoleClaims
+dbo.AspNetUserClaims
+dbo.AspNetUserLogins
+dbo.AspNetUserRoles
+dbo.AspNetUserTokens
+```
+
+The HR employee is a separate business representation of the same person. A real relational foreign key connects the HR model to Identity:
+
+```text
+dbo.AspNetUsers.Id
+        │
+        ▼
+hr.Employees.UserId
+```
+
+Organizational membership remains an HR concern:
+
+```text
+Employee
+    ↓
+EmployeeDepartment
+    ↓
+Department
+```
+
+Downstream Finance, IT and Operations records continue to reference `EmployeeId` directly.
+
+---
+
+## DataArc SQL Server DDL Builder
+
+The SQL Server integration surface composes all five EF Core models into one database definition:
 
 ```csharp
-var databaseBuilder = _databaseFactory.CreateDatabaseBuilder();
-
 var demoDatabase = databaseBuilder
+    .IncludeDbContext<AuthDbContext>()
     .IncludeDbContext<HrDbContext>()
     .IncludeDbContext<ItDbContext>()
     .IncludeDbContext<OperationsDbContext>()
@@ -266,284 +267,251 @@ var demoDatabase = databaseBuilder
     .Build(
         generateScripts: true,
         applyChanges: true);
+```
 
+The current demo initialization uses a create-and-reconcile sequence:
+
+```csharp
 demoDatabase.ExecuteDrop();
+
+// Create the database, schemas, tables, keys and relationships.
+demoDatabase.ExecuteCreate();
+
+// Reconcile the new database against the complete EF Core model metadata.
 demoDatabase.ExecuteCreate();
 ```
 
-This demonstrates that modular `DbContext` boundaries can participate in one physical relational database without requiring the application to collapse those contexts into one large context.
+The second call runs against the existing database and applies metadata-driven constraints discovered during reconciliation, including Identity uniqueness and the `EmployeeDepartment` composite uniqueness rule.
 
-The integration test deliberately exercises the commercial `DataArc.EntityFrameworkCore.SqlServer` package.
-
----
-
-## Why The DDL Builder Matters Here
-
-The demo has a topology where the DDL Builder is useful rather than artificial:
-
-```text
-HrDbContext
-FinanceDbContext
-ItDbContext
-OperationsDbContext
-        |
-        +----> one composed SQL Server database
-```
-
-That allows the application to preserve module ownership while still using normal relational database capabilities where appropriate.
-
-The DDL Builder can generate and apply the database definition from the participating EF Core models without making EF migrations the only database-construction path for the demo.
+This keeps the EF Core model authoritative while demonstrating DataArc's database-composition path without requiring EF migrations for the demo database.
 
 ---
 
-## EF Core Registration
+## Package model
 
-The demo uses `IDbContextFactory<TContext>` for persistence.
+### DataArc.OrchestrationFramework
 
-Because DataArc infrastructure is scoped in the WebAPI, the factories are registered with a scoped lifetime as well:
+The application/orchestration layer uses the DataArc orchestration stack:
 
-```csharp
-services.AddDbContextFactory<HrDbContext>(
-    options =>
-        options
-            .UseSqlServer(
-                configurationManager.GetConnectionString("DataArcDemoDb"))
-            .UseLoggerFactory(factory),
-    ServiceLifetime.Scoped);
+```xml
+<PackageReference Include="DataArc.OrchestrationFramework" Version="2.0.0" />
 ```
 
-The same pattern is used for:
+The orchestration framework brings together the free application stack used by the demo, including orchestration, observers/events and EF Core execution capabilities.
 
-```text
-FinanceDbContext
-HrDbContext
-ItDbContext
-OperationsDbContext
+### DataArc.EntityFrameworkCore
+
+The employee import demonstrates the free EF Core execution path, including bulk and parallel execution.
+
+### DataArc.EntityFrameworkCore.SqlServer
+
+The commercial SQL Server package is used where SQL Server-specific capabilities are intentionally demonstrated, including:
+
+- multi-`DbContext` DDL composition
+- cross-context database construction
+- advanced coordinated SQL Server transaction execution
+
+```xml
+<PackageReference Include="DataArc.EntityFrameworkCore.SqlServer" Version="2.0.0" />
 ```
-
-This is important in an ASP.NET Core host where factory-created contexts participate in DataArc execution that resolves scoped infrastructure.
 
 ---
 
-## DataArc Registration
-
-The WebAPI owns the DataArc bootstrap.
-
-```csharp
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddDataArcCore();
-
-builder.Services.AddHRModule(builder.Configuration);
-```
-
-`AddDataArcCore()` is registered once at the application composition root.
-
-Feature/module registration methods register their own application, orchestration, and persistence services; they do not own the application-level DataArc bootstrap.
-
----
-
-## Free And Commercial Paths
-
-The demo intentionally exercises both package boundaries.
-
-### Free path
-
-The WebAPI import flow uses the free EF Core package:
-
-```csharp
-await dbContext.AsParallel()
-    .AddBulk(importData, input.ImportBatchSize)
-    .SaveChangesParallelAsync();
-```
-
-No commercial SQL Server transaction or DDL API is required for that path.
-
-### Commercial SQL Server path
-
-The integration-test project uses `DataArc.EntityFrameworkCore.SqlServer` for SQL Server-specific commercial capabilities such as multi-context DDL composition.
-
-Commercial test composition can use a configured key or server-key path, depending on the environment.
-
----
-
-## Project Structure
-
-The solution separates application contracts, orchestration, persistence, presentation, and integration tests.
+## Project structure
 
 ```text
 DataArc.Orchestration.Framework
-|
-├── Demo.Application.Domain
-│   └── Domain models and domain-facing concepts
-|
-├── Demo.Application.Domain.SharedKernel
-│   └── Shared domain primitives and common domain types
-|
-├── Demo.Application.Features
-│   └── Feature-level contracts and service boundaries
-|
-├── Demo.Application.Modules
-│   └── Application module wiring
-|
-├── Demo.Orchestration
-│   └── Concrete orchestrators and workflow coordination
-|
-├── Demo.Persistence
-│   └── EF Core DbContexts, database setup, and persistence registration
-|
-├── Demo.WebApi
-│   └── ASP.NET Core API entry point and Swagger surface
-|
-└── Demo.Integration.Tests
-    └── SQL Server integration tests, including multi-context DDL generation
+│
+├── src
+│   ├── App
+│   │   ├── Demo.Application.Domain
+│   │   ├── Demo.Application.Domain.SharedKernel
+│   │   ├── Demo.Application.Features
+│   │   └── Demo.Application.Modules
+│   │
+│   ├── Host
+│   │   └── Demo.Host.Aspire
+│   │       ├── Demo.Host.Aspire.AppHost
+│   │       ├── Demo.Host.Aspire.ServiceDefaults
+│   │       └── Demo.Host.Aspire.Web
+│   │
+│   ├── Infrastructure
+│   │   └── Demo.Persistence
+│   │
+│   ├── Orchestration
+│   │   └── Demo.Orchestration
+│   │
+│   └── Presentation
+│       └── Demo.WebApi
+│
+└── tests
+    └── Demo.Integration.Tests
 ```
 
-The structure is intentionally more explicit than a tiny sample because the repository is meant to show where orchestration fits in a real application shape.
+### Layer responsibilities
+
+| Area | Responsibility |
+|---|---|
+| `Demo.Application.Domain` | entities, value objects, policies and application events |
+| `Demo.Application.Features` | feature contracts and application-facing boundaries |
+| `Demo.Application.Modules` | module composition and adapters |
+| `Demo.Orchestration` | concrete orchestrators, ports and observers |
+| `Demo.Persistence` | EF Core contexts, models and SQL Server persistence |
+| `Demo.WebApi` | ASP.NET Core API and Swagger surface |
+| `Demo.Host.Aspire.Web` | Razor Components demo UI |
+| `Demo.Host.Aspire.AppHost` | Aspire application hosting and service topology |
+| `Demo.Integration.Tests` | SQL Server composition and workflow integration verification |
 
 ---
 
-## Running The Demo
+## Running the demo
 
 ### Requirements
 
 - .NET 10 SDK
-- SQL Server, SQL Server Developer Edition, or another SQL Server instance you control
+- SQL Server / SQL Server Developer Edition
+- a local environment capable of running .NET Aspire
 
-The demo itself targets .NET 10.
+The physical demo database is:
 
-### 1. Configure the connection string
+```text
+DataArcOrchestrationDemo
+```
 
-Update the WebAPI `appsettings.json`:
+The application connection-string key is:
+
+```text
+DataArcDemoDb
+```
+
+### 1. Configure SQL Server
+
+Update the connection string used by the API and integration tests for your SQL Server instance.
+
+Example:
 
 ```json
 {
   "ConnectionStrings": {
-    "DataArcDemoDb": "Server=YOUR_SERVER;Database=DataArcDemoDb;Integrated Security=true;TrustServerCertificate=True;"
+    "DataArcDemoDb": "Server=.;Database=DataArcOrchestrationDemo;Integrated Security=SSPI;TrustServerCertificate=True;MultipleActiveResultSets=True"
   }
 }
 ```
 
-### 2. Run the WebAPI
+### 2. Run the demo setup/reset script
 
-Set the startup project to:
-
-```text
-Demo.WebApi
-```
-
-or run the project from the command line using the repository's WebAPI project path.
-
-### 3. Open Swagger
-
-Use the Swagger URL printed by ASP.NET Core, typically:
+Before the first walkthrough, run:
 
 ```text
-https://localhost:PORT/swagger
+scripts/setup.sql
 ```
 
-### 4. Import demo HR data
+The setup/reset script is the explicit entry point for preparing the demo environment. It must not replace the DataArc DDL Builder by hard-coding the complete application schema: DataArc remains responsible for composing the participating EF Core models into the database.
 
-Call:
+If the seeded employee has already been onboarded and you want to replay the onboarding workflow from its initial state, run the documented reset/setup step again before repeating the scenario.
+
+> The repository setup script is part of the release checklist. If it is not yet present in your checkout, use the integration-test initialization path until that release item has been completed.
+
+### 3. Start the Aspire AppHost
+
+Use `Demo.Host.Aspire.AppHost` as the startup project.
+
+Aspire starts:
+
+```text
+apiservice    -> Demo.WebApi
+webfrontend   -> Demo.Host.Aspire.Web
+```
+
+The frontend references `apiservice` through Aspire service discovery rather than a hard-coded localhost port.
+
+### 4. Use the Razor demo UI
+
+The frontend exposes the two main walkthroughs:
+
+```text
+/employees/import    Import Employees
+/onboarding          Employee Onboarding
+```
+
+### 5. Inspect the API through Swagger
+
+`Demo.WebApi` exposes Swagger in Development. Aspire surfaces the API endpoint in its resource dashboard.
+
+Current demo endpoints:
 
 ```text
 POST /api/hr/imports
-```
-
-A normal demo run imports 100,000 records.
-
-### 5. Run employee onboarding
-
-Call:
-
-```text
 POST /api/hr/onboarding
 ```
 
-Use an employee created by the import flow and inspect the structured orchestration response.
+### 6. Inspect logs and telemetry in Aspire
+
+Use the Aspire dashboard to inspect:
+
+- application resources and health
+- service startup/order
+- API and frontend console logs
+- EF Core command output
+- request activity and telemetry exposed by Service Defaults
+
+This is useful when comparing **application hosting orchestration** in Aspire with **application workflow orchestration** in DataArc.
 
 ---
 
-## Running The Integration Tests
+## Demo / QA license key
 
-The integration-test project exercises the SQL Server-specific package surface.
-
-The database setup test demonstrates multi-context DDL composition without EF migrations:
-
-```text
-HrDbContext
-ItDbContext
-OperationsDbContext
-FinanceDbContext
-        |
-        v
-DataArc database definition
-        |
-        v
-generate / apply / drop / recreate
-```
-
-The tests require access to the configured SQL Server instance and, where a commercial capability is being exercised, a valid DataArc commercial/server-key configuration.
+The integration-test configuration contains a **QA-generated DataArc key intended for this public demo repository**. It is not a production/customer license and is deliberately supplied so the published demo can exercise the licensed SQL Server surface without documenting internal server-key infrastructure.
 
 ---
 
-## Design Boundaries
+## Running the integration tests
 
-The demo follows a few deliberate boundaries.
+The integration tests require access to the configured SQL Server instance.
 
-### ASP.NET Core owns the API surface
+They verify the real package surface rather than mocks, including:
 
-Endpoints receive requests and return responses.
+- composed database creation
+- ASP.NET Core Identity participation
+- cross-context and cross-schema foreign keys
+- HR/Department relational membership
+- onboarding persistence across HR, Finance, IT and Operations
+- coordinated transaction behavior
 
-### Orchestrators own workflow coordination
-
-The orchestration layer expresses the use case and coordinates participating application boundaries.
-
-### Policies own business decisions
-
-Policies answer whether the workflow may continue.
-
-### EF Core owns persistence
-
-The application still uses normal EF Core `DbContext` models and `IDbContextFactory<TContext>`.
-
-### DataArc adds execution and composition
-
-The free package adds orchestration-friendly EF Core execution such as bulk and parallel execution.
-
-The SQL Server package adds SQL Server-specific commercial capabilities such as advanced transactional execution and multi-context DDL composition.
+The database setup sequence deliberately resets the test database so test runs remain deterministic.
 
 ---
 
-## Boundary Note
+## Design boundaries
 
-DataArc Orchestration Framework is intended for controlled application workflows where the application is allowed to coordinate participating modules and persistence boundaries.
+The demo intentionally keeps these responsibilities separate:
 
-It is not intended to bypass service ownership rules or encourage unrelated services to read and write each other's private databases.
+**ASP.NET Core** owns HTTP/API concerns.  
+**Razor Components** provide the evaluator-facing demo UI.  
+**.NET Aspire** owns development-time application hosting, discovery and observability.  
+**DataArc Orchestrator** owns application workflow coordination.  
+**Policies** own business decisions.  
+**EF Core** owns normal persistence and querying.  
+**DataArc.EntityFrameworkCore** adds opt-in execution behavior such as bulk/parallel operations.  
+**DataArc.EntityFrameworkCore.SqlServer** adds SQL Server-specific commercial capabilities.
 
 The goal is explicit orchestration, not hidden coupling.
 
 ---
 
-## Summary
+## Links
 
-This demo shows the current DataArc 2.0 story:
-
-- named application orchestration
-- policy-driven workflow decisions
-- thin ASP.NET Core endpoints
-- normal EF Core `DbContext` usage
-- `IDbContextFactory<TContext>` persistence
-- free parallel/bulk EF Core execution
-- modular HR, Finance, IT, and Operations contexts
-- one physical SQL Server database
-- commercial multi-context DDL composition
-- integration tests that exercise the actual package boundaries
-
-The central idea remains:
-
-> Keep application workflows explicit, keep EF Core familiar, and add DataArc only where orchestration, execution, or database composition provides value.
+- **DataArc:** [https://www.dataarc.dev](https://www.dataarc.dev)
+- **GitHub repository:** [SolidArcSoftware/DataArc.Orchestration.Framework](https://github.com/SolidArcSoftware/DataArc.Orchestration.Framework)
+- **Solid Arc Software on GitHub:** [https://github.com/SolidArcSoftware](https://github.com/SolidArcSoftware)
+- **NuGet — DataArc.OrchestrationFramework:** [nuget.org/packages/DataArc.OrchestrationFramework](https://www.nuget.org/packages/DataArc.OrchestrationFramework)
+- **NuGet — DataArc.EntityFrameworkCore:** [nuget.org/packages/DataArc.EntityFrameworkCore](https://www.nuget.org/packages/DataArc.EntityFrameworkCore)
+- **NuGet — DataArc.EntityFrameworkCore.SqlServer:** [nuget.org/packages/DataArc.EntityFrameworkCore.SqlServer](https://www.nuget.org/packages/DataArc.EntityFrameworkCore.SqlServer)
 
 ---
 
-Learn more: [www.dataarc.dev](https://www.dataarc.dev)
+## The idea in one sentence
+
+> **Multiple `DbContext` models can remain application boundaries without becoming relational boundaries, while DataArc keeps the application workflow explicit and .NET Aspire keeps the applications observable.**
+
+Built by **Solid Arc Software**.
