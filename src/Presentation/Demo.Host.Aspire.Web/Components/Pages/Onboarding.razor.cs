@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Net.Http.Json;
 using System.Text.Json;
 
 using Microsoft.AspNetCore.Components;
@@ -11,7 +10,7 @@ public partial class Onboarding
     [Inject]
     public IHttpClientFactory HttpClientFactory { get; set; } = null!;
 
-    protected int EmployeeId { get; set; } = 1;
+    protected int UserId { get; set; } = 1;
 
     protected decimal AnnualSalary { get; set; } = 85_000;
 
@@ -39,7 +38,7 @@ public partial class Onboarding
 
             var request = new OnboardEmployeeRequest
             {
-                EmployeeId = EmployeeId,
+                UserId = UserId,
                 AnnualSalary = AnnualSalary,
                 CurrencyCode = CurrencyCode,
                 Reason = Reason
@@ -66,13 +65,13 @@ public partial class Onboarding
             if (result == null)
             {
                 ErrorMessage =
-                    "Employee onboarding completed but no response was returned.";
+                    "User onboarding completed but no response was returned.";
 
                 return;
             }
 
             SuccessMessage =
-                $"Employee {result.EmployeeId:N0} " +
+                $"User {result.EmployeeId:N0} " +
                 $"{result.Name} {result.Surname} was onboarded in " +
                 $"{stopwatch.ElapsedMilliseconds:N0} milliseconds. " +
                 $"Payroll record {result.PayrollRecordId:N0} was created.";
@@ -82,7 +81,7 @@ public partial class Onboarding
             stopwatch.Stop();
 
             ErrorMessage =
-                $"Employee onboarding failed after " +
+                $"User onboarding failed after " +
                 $"{stopwatch.ElapsedMilliseconds:N0} milliseconds. " +
                 $"{exception.Message}";
         }
@@ -131,7 +130,7 @@ public partial class Onboarding
 
     private sealed class OnboardEmployeeRequest
     {
-        public int EmployeeId { get; set; }
+        public int UserId { get; set; }
 
         public decimal AnnualSalary { get; set; }
 

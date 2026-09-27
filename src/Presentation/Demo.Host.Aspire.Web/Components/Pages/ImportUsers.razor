@@ -1,17 +1,17 @@
-﻿@page "/employees/import"
+﻿@page "/users/import"
 @rendermode InteractiveServer
 
 <PageTitle>Import Employees</PageTitle>
 
-<h1>Import Employees</h1>
+<h1>Import Users</h1>
 
 <p>
-    Import employee data using the DataArc bulk execution pipeline.
+    Import identity users using the DataArc bulk execution pipeline.
 </p>
 
 <div class="mb-3">
     <button class="btn btn-primary"
-            @onclick="ImportEmployeesAsync"
+            @onclick="ImportUsersAsync"
             disabled="@IsImporting">
 
         @if (IsImporting)
@@ -20,11 +20,11 @@
                   role="status"
                   aria-hidden="true"></span>
 
-            <span>Importing employees...</span>
+            <span>Importing users...</span>
         }
         else
         {
-            <span>Import Employees</span>
+            <span>Import Users</span>
         }
     </button>
 </div>

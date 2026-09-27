@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace Demo.Host.Aspire.Web.Components.Pages;
 
-public partial class ImportEmployees
+public partial class ImportUsers
 {
     [Inject]
     public IHttpClientFactory HttpClientFactory { get; set; } = null!;
@@ -15,7 +15,7 @@ public partial class ImportEmployees
 
     protected string? ErrorMessage { get; set; }
 
-    protected async Task ImportEmployeesAsync()
+    protected async Task ImportUsersAsync()
     {
         IsImporting = true;
         SuccessMessage = null;
@@ -28,7 +28,7 @@ public partial class ImportEmployees
             var client = HttpClientFactory.CreateClient("DataArcApi");
 
             using var response = await client.PostAsync(
-                "/api/hr/imports",
+                "/api/auth/imports",
                 content: null);
 
             stopwatch.Stop();
@@ -36,7 +36,7 @@ public partial class ImportEmployees
             if (!response.IsSuccessStatusCode)
             {
                 ErrorMessage =
-                    $"Employee import failed after {stopwatch.ElapsedMilliseconds:N0} milliseconds.";
+                    $"User import failed after {stopwatch.ElapsedMilliseconds:N0} milliseconds.";
 
                 return;
             }
@@ -47,7 +47,7 @@ public partial class ImportEmployees
             if (result == null)
             {
                 ErrorMessage =
-                    "Employee import completed but no response was returned.";
+                    "User import completed but no response was returned.";
 
                 return;
             }
@@ -55,13 +55,13 @@ public partial class ImportEmployees
             if (result.Errors is { Count: > 0 })
             {
                 ErrorMessage =
-                    $"Employee import completed with {result.Errors.Count:N0} error(s).";
+                    $"User import completed with {result.Errors.Count:N0} error(s).";
 
                 return;
             }
 
             SuccessMessage =
-                $"{result.TotalRecordsProcessed:N0} employees imported in " +
+                $"{result.TotalRecordsProcessed:N0} users imported in " +
                 $"{stopwatch.ElapsedMilliseconds:N0} milliseconds.";
         }
         catch (Exception exception)
@@ -69,7 +69,7 @@ public partial class ImportEmployees
             stopwatch.Stop();
 
             ErrorMessage =
-                $"Employee import failed after " +
+                $"User import failed after " +
                 $"{stopwatch.ElapsedMilliseconds:N0} milliseconds. " +
                 $"{exception.Message}";
         }

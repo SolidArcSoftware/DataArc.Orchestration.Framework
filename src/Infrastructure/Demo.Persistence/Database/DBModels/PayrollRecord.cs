@@ -18,7 +18,7 @@ namespace Demo.Persistence.DbModels
 
         public bool IsActive { get; set; }
 
-        public DateTimeOffset CreatedOnUtc { get; set; }
+        public DateTimeOffset? CreatedOnUtc { get; set; }
 
         public int EmployeeId { get; set; }
 

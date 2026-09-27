@@ -16,7 +16,7 @@ namespace Demo.Persistence.DbModels
 
         public string RequestStatus { get; set; } = string.Empty;
 
-        public DateTimeOffset RequestedOnUtc { get; set; }
+        public DateTimeOffset? RequestedOnUtc { get; set; }
 
         public DateTimeOffset? CompletedOnUtc { get; set; }
 

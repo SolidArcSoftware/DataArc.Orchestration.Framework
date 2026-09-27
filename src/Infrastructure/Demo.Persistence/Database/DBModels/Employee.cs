@@ -35,7 +35,7 @@ namespace Demo.Persistence.DbModels
         public DateTime CreatedUtc { get; set; }
 
         [Column("LastUpdatedUtc", Order = 8)]
-        public DateTime? LastUpdatedUtc { get; set; }
+        public DateTimeOffset? LastUpdatedUtc { get; set; }
 
         [Column("Notes", Order = 9, TypeName = "nvarchar(500)")]
         public string? Notes { get; set; }
@@ -49,6 +49,6 @@ namespace Demo.Persistence.DbModels
         [Required]
         public int UserId { get; set; }
         [ForeignKey(nameof(UserId))]
-        public AuthUser AuthUsers { get; set; }
+        public AuthUser? AuthUsers { get; set; }
     }
 }

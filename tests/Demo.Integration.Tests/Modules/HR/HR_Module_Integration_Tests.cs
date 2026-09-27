@@ -6,8 +6,8 @@ namespace Demo.Integration.Tests.Modules.HR
 {
     [TestFixture]
     [NonParallelizable]
-    [TestFixture]
-    internal class HRModuleIntegrationTests : SetupDbBase
+    internal class HRModuleIntegrationTests : SetupModulesBase
+    // Setting up all modules for demo purposes
     {
         [Test]
         public async Task OnboardEmployee_Should_Execute_Complete_Workflow()
@@ -18,7 +18,7 @@ namespace Demo.Integration.Tests.Modules.HR
 
             var request = new OnboardEmployeeRequestDto
             {
-                EmployeeId = EmployeeId,
+                UserId = 1,
                 AnnualSalary = 95_000,
                 CurrencyCode = "USD",
                 Reason = "Integration test employee onboarding"
@@ -31,8 +31,18 @@ namespace Demo.Integration.Tests.Modules.HR
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(response.IsSuccess, Is.True, response.FailureReason);
-                Assert.That(response.EmployeeId, Is.EqualTo(EmployeeId));
+                Assert.That(
+                    response.IsSuccess,
+                    Is.True,
+                    response.FailureReason);
+
+                Assert.That(
+                    response.EmployeeId,
+                    Is.GreaterThan(0));
+
+                Assert.That(
+                    response.PayrollRecordId,
+                    Is.GreaterThan(0));
             });
         }
     }

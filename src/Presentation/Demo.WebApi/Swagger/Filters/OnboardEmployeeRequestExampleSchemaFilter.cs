@@ -16,7 +16,7 @@ namespace Demo.WebApi.Swagger
 
             schema.Example = new OpenApiObject
             {
-                ["employeeId"] = new OpenApiInteger(1),
+                ["userId"] = new OpenApiInteger(1),
                 ["annualSalary"] = new OpenApiDouble(85000),
                 ["currencyCode"] = new OpenApiString("USD"),
                 ["reason"] = new OpenApiString("Demo employee onboarding")

@@ -8,20 +8,33 @@ namespace Demo.Application.Domain.HR.Policies
     {
         public PolicyResult Apply(OnboardEmployeePolicyContext context)
         {
-            if (context == null || context.OnBoardEmployeeValueObject == null)
-                throw new InvalidOperationException("Onboarding policy context was null");
+            if (context == null || context.Employee == null)
+            {
+                throw new InvalidOperationException(
+                    "Onboarding policy context was null");
+            }
 
-            var employee = context.OnBoardEmployeeValueObject;
-
-            if (employee.IsOnboarded)
+            if (context.Employee.IsOnboarded)
             {
                 return PolicyResult.Fail(
                     "Employee onboarding cannot be completed because the employee has already been onboarded.",
-                    new OnboardEmployeeRejectedEvent("The employee has already been onboarded"));
+                    new OnboardEmployeeRejectedEvent(
+                        "The employee has already been onboarded"));
+            }
+
+            if (context.PayrollRecordExists ||
+                context.AccessRequestExists ||
+                context.OnboardingTaskExists)
+            {
+                return PolicyResult.Fail(
+                    "Employee onboarding cannot be completed because onboarding records already exist.",
+                    new OnboardEmployeeRejectedEvent(
+                        "Existing employee onboarding records were found"));
             }
 
             return PolicyResult.Success(
-                new OnboardEmployeeAcceptedEvent("Employee onboarding policy accepted the request."));
+                new OnboardEmployeeAcceptedEvent(
+                    "Employee onboarding policy accepted the request."));
         }
     }
 }

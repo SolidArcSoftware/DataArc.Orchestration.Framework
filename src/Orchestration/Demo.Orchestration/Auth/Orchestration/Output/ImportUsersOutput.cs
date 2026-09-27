@@ -1,8 +1,8 @@
 ﻿using DataArc.Orchestrator;
 
-namespace Demo.Orchestration.HR.Orchestrators.Ouput
+namespace Demo.Orchestration.Auth.Orchestration.Output
 {
-    public class ImportEmployeesOutput : IOrchestratorOutput
+    public class ImportUsersOutput : IOrchestratorOutput
     {
         public List<string>? Errors { get; set; }
         public int TotalRecordsProcessed { get; set; }

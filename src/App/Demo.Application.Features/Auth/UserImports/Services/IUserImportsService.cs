@@ -2,8 +2,8 @@
 
 namespace Demo.Application.Features.HR.EmployeeImports.Services
 {
-    public interface IEmployeeImportsService
+    public interface IUserImportsService
     {
-        Task<ImportEmployeesResponseDto> ImportEmployeeData();
+        Task<ImportUserssResponseDto> ImportUserData();
     }
 }

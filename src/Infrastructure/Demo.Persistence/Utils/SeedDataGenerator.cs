@@ -4,39 +4,42 @@ namespace Demo.Persistence.Utils
 {
     public static class SeedDataGenerator
     {
-        private static string GetRandomStatus(Random rand)
+        public static List<AuthUser> GenerateIdentityUserSeedData(
+            int count = 50)
         {
-            var statuses = new[] { "Active", "Inactive", "Pending" };
-            return statuses[rand.Next(statuses.Length)];
-        }
-
-        public static List<Employee> GenerateHrSeedData(int count = 50)
-        {
-            var list = new List<Employee>();
-            var rand = new Random();
+            var users = new List<AuthUser>();
 
             for (int i = 1; i <= count; i++)
             {
-                var entity = new Employee
-                {
-                    Id = i,
-                    Name = $"Name{i}",
-                    Surname = $"Surname{i}",
-                    Salary = Math.Round((decimal)(rand.NextDouble() * (150000 - 30000) + 30000), 2),
-                    EmployerId = 1,
-                    Order = rand.Next(1, 101),
-                    IsArchived = rand.Next(0, 2) == 0,
-                    CreatedUtc = DateTime.UtcNow.AddDays(-rand.Next(0, 1000)),
-                    LastUpdatedUtc = DateTime.UtcNow,
-                    Notes = $"This is a sample note for record {i}.",
-                    OnBoardingStatus = GetRandomStatus(rand),
-                    Rating = Math.Round(rand.NextDouble() * 4 + 1, 2)
-                };
+                var email = $"employee{i}@solidarcsoftware.com";
 
-                list.Add(entity);
+                users.Add(new AuthUser
+                {
+                    UserName = email,
+                    NormalizedUserName = email.ToUpperInvariant(),
+
+                    Email = email,
+                    NormalizedEmail = email.ToUpperInvariant(),
+
+                    EmailConfirmed = true,
+
+                    AccessFailedCount = 0,
+                    LockoutEnabled = true,
+                    LockoutEnd = null,
+
+                    PhoneNumber = null,
+                    PhoneNumberConfirmed = false,
+
+                    TwoFactorEnabled = false,
+
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    ConcurrencyStamp = Guid.NewGuid().ToString(),
+
+                    UserTimeZone = "Africa/Johannesburg"
+                });
             }
 
-            return list;
+            return users;
         }
     }
 }

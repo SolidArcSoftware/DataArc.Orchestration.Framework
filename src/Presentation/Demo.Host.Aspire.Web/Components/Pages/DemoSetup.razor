@@ -1,0 +1,96 @@
+﻿@page "/DemoSetup"
+@rendermode InteractiveServer
+
+<PageTitle>Demo Setup</PageTitle>
+
+<div class="container-fluid px-0">
+
+    <section class="mb-5">
+        <div class="p-4 p-lg-5 rounded-3 border bg-body-tertiary">
+
+            <div class="mb-4">
+                <h1 class="display-5 fw-semibold mb-3">
+                    Demo Setup
+                </h1>
+
+                <p class="lead mb-2">
+                    Prepare the SQL Server database before running the DataArc Orchestration Demo.
+                </p>
+
+                <p class="text-body-secondary mb-0">
+                    The script creates the
+                    <code>DataArcOrchestrationDemo</code> database,
+                    application schemas, ASP.NET Core Identity tables,
+                    business tables and relational constraints used by the demo.
+                </p>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+
+                    <div class="d-flex flex-column flex-md-row
+                        align-items-md-center
+                        justify-content-between
+                        gap-3">
+
+                        <div>
+                            <h2 class="h4 mb-1">
+                                Database Setup Script
+                            </h2>
+
+                            <p class="text-body-secondary mb-0">
+                                Run this script against SQL Server before starting the demo.
+                            </p>
+                        </div>
+
+                        <button type="button"
+                                class="btn-primary copy-code-button"
+                                title="Copy SQL"
+                                aria-label="Copy SQL"
+                                @onclick="CopySqlAsync">
+
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 width="16"
+                                 height="16"
+                                 viewBox="0 0 16 16"
+                                 fill="currentColor"
+                                 aria-hidden="true">
+
+                                <path d="M4 2a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-1V9h1V2H6v1H4V2z" />
+
+                                <path d="M1 5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5zm2-1a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H3z" />
+                            </svg>
+
+                            <span class="ms-2">Copy SQL</span>
+                        </button>
+
+                    </div>
+
+                    <details class="sql-details mt-4">
+                        <summary>
+                            View SQL setup script
+                        </summary>
+
+                        <div class="code-block-wrapper mt-3">
+                            <pre class="mb-0"><code>@SqlScript</code></pre>
+                        </div>
+                    </details>
+
+                </div>
+            </div>
+
+            <div class="alert alert-info mt-4 mb-0"
+                 role="alert">
+
+                <strong>Note:</strong>
+                The script starts with
+                <code>CREATE DATABASE [DataArcOrchestrationDemo]</code>.
+                If the database already exists, reset or remove the existing
+                demo database before running the script again.
+
+            </div>
+
+        </div>
+    </section>
+
+</div>

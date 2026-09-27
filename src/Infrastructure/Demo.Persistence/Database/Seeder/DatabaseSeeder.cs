@@ -1,5 +1,6 @@
 ﻿using Demo.Persistence.DbContexts;
 using Demo.Persistence.DbModels;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace Demo.Persistence.Database.Seeder
@@ -21,38 +22,57 @@ namespace Demo.Persistence.Database.Seeder
             await using var dbContext =
                 await _hrDbContextFactory.CreateDbContextAsync();
 
-            var createdUtc = DateTime.UtcNow;
+            /*
+             * Seed only the reference data required by the demo.
+             *
+             * Identity users are imported through the Auth workflow.
+             * Employees and all downstream onboarding records are created
+             * by the employee onboarding workflow.
+             */
 
-            var employer = new Employer
+            var employerExists =
+                await dbContext.Set<Employer>()
+                    .AsNoTracking()
+                    .AnyAsync(employer =>
+                        employer.Name == "SolidArcSoftware");
+
+            if (!employerExists)
             {
-                Name = "Solid Arc Software",
-                Description =
-                    "Demo employer used by the DataArc Orchestration Framework integration tests."
-            };
+                var employer = new Employer
+                {
+                    Name = "SolidArcSoftware",
+                    Description =
+                        "Demo employer used by the DataArc employee onboarding workflow."
+                };
 
-            dbContext.Set<Employer>().Add(employer);
+                await dbContext.Set<Employer>()
+                    .AddAsync(employer);
+            }
 
-            rowsAffected += await dbContext.SaveChangesAsync();
+            var departmentExists =
+                await dbContext.Set<Department>()
+                    .AsNoTracking()
+                    .AnyAsync(department =>
+                        department.Name == "Information Technology");
 
-            var employee = new Employee
+            if (!departmentExists)
             {
-                Name = "Demo",
-                Surname = "Employee",
-                Salary = 95000.00m,
-                EmployerId = employer.Id,
-                Order = 1,
-                IsArchived = false,
-                CreatedUtc = createdUtc,
-                LastUpdatedUtc = null,
-                Notes =
-                    "Seed employee used for the onboarding orchestration workflow.",
-                OnBoardingStatus = "Pending",
-                Rating = 4.8
-            };
+                var department = new Department
+                {
+                    Name = "Information Technology",
+                    Description =
+                        "Information Technology Department"
+                };
 
-            dbContext.Set<Employee>().Add(employee);
+                await dbContext.Set<Department>()
+                    .AddAsync(department);
+            }
 
-            rowsAffected += await dbContext.SaveChangesAsync();
+            if (dbContext.ChangeTracker.HasChanges())
+            {
+                rowsAffected +=
+                    await dbContext.SaveChangesAsync();
+            }
 
             return rowsAffected;
         }

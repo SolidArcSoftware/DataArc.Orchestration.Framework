@@ -2,12 +2,30 @@
 
 namespace Demo.Application.Domain.HR.Policies.Contexts
 {
-    public class OnboardEmployeePolicyContext
+    public sealed class OnboardEmployeePolicyContext
     {
-        public OnBoardEmployeeValueObject OnBoardEmployeeValueObject { get; }
-        public OnboardEmployeePolicyContext(OnBoardEmployeeValueObject onBoardEmployeeValueObject)
+        public OnBoardEmployeeValueObject Employee { get; }
+
+        public bool HasDepartment { get; }
+
+        public bool PayrollRecordExists { get; }
+
+        public bool AccessRequestExists { get; }
+
+        public bool OnboardingTaskExists { get; }
+
+        public OnboardEmployeePolicyContext(
+            OnBoardEmployeeValueObject employee,
+            bool hasDepartment,
+            bool payrollRecordExists,
+            bool accessRequestExists,
+            bool onboardingTaskExists)
         {
-            OnBoardEmployeeValueObject = onBoardEmployeeValueObject;
+            Employee = employee;
+            HasDepartment = hasDepartment;
+            PayrollRecordExists = payrollRecordExists;
+            AccessRequestExists = accessRequestExists;
+            OnboardingTaskExists = onboardingTaskExists;
         }
     }
 }

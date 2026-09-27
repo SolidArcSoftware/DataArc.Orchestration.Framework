@@ -2,8 +2,8 @@
 using Demo.Application.Features.HR.EmployeeImports.Services;
 using Demo.Application.Features.HR.EmployeeOnboarding.Services;
 using Demo.Application.Features.HR.Repositories;
+using Demo.Application.Modules.Auth.Services;
 using Demo.Application.Modules.Modules.HR.Adapters;
-using Demo.Application.Modules.Modules.HR.Repositories;
 using Demo.Application.Modules.Modules.HR.Services;
 using Demo.Orchestration.HR;
 using Demo.Orchestration.HR.Ports;
@@ -18,6 +18,9 @@ namespace Demo.Application.Modules.HR
     {
         public static IServiceCollection AddHRModule(this IServiceCollection services, ConfigurationManager configurationManager)
         {
+            //HR Logging
+            services.AddLogging();
+
             //HR Persistence
             services.AddHrPersistence(configurationManager);
 
@@ -34,7 +37,7 @@ namespace Demo.Application.Modules.HR
             services.AddScoped<IEmployeeOnboardingPolicy, OnboardEmployeePolicy>();
 
             // HR features / services
-            services.TryAddScoped<IEmployeeImportsService, EmployeeImportsService>();
+            services.TryAddScoped<IUserImportsService, UserImportsService>();
             services.TryAddScoped<IEmployeeOnboardingService, EmployeeOnboardingService>();
 
             return services;

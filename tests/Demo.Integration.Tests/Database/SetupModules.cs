@@ -6,20 +6,19 @@ using Demo.Application.Modules.Finance;
 using Demo.Application.Modules.HR;
 using Demo.Application.Modules.IT;
 using Demo.Application.Modules.Operations;
-
-using Demo.Persistence.DbContexts;
-using Demo.Persistence.DbModels;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using Demo.Persistence.DbContexts;
+using Demo.Persistence.DbModels;
+
 namespace Demo.Integration.Tests
 {
-    internal abstract class SetupDbBase
+    internal abstract class SetupModulesBase
     {
         protected ServiceProvider ServiceProvider = null!;
-        protected int EmployeeId { get; private set; }
+        protected int UserId { get; private set; }
 
         private IDatabaseFactory _databaseFactory = null!;
 
@@ -48,7 +47,7 @@ namespace Demo.Integration.Tests
                 })
                 .ConfigureDataArc();
 
-            //Register module
+            //Register modules
             services.AddIdentityModule(configuration);
             services.AddHRModule(configuration);
             services.AddITModule(configuration);
@@ -63,7 +62,7 @@ namespace Demo.Integration.Tests
         public async Task SetupDatabase()
         {
             ResetDatabase();
-            EmployeeId = await SeedDatabaseAsync();
+            UserId = await SeedDatabaseAsync();
         }
 
         [OneTimeTearDown]
@@ -87,7 +86,7 @@ namespace Demo.Integration.Tests
                     generateScripts: true,
                     applyChanges: true);
 
-            //demoDatabase.ExecuteDrop();
+            demoDatabase.ExecuteDrop();
             demoDatabase.ExecuteCreate();
         }
 
@@ -135,39 +134,41 @@ namespace Demo.Integration.Tests
 
             await hrDbContext.SaveChangesAsync();
 
-            var utcNow = DateTime.UtcNow;
+            //var utcNow = DateTime.UtcNow;
 
-            var employee = new Employee
-            {
-                UserId = user.Id,
-                Name = "Integration",
-                Surname = "Employee",
-                Salary = 95_000,
-                EmployerId = employer.Id,
-                Order = 1,
-                IsArchived = false,
-                CreatedUtc = utcNow,
-                LastUpdatedUtc = utcNow,
-                Notes = "Integration test employee",
-                OnBoardingStatus = "Pending",
-                Rating = 5
-            };
+            //var employee = new Employee
+            //{
+            //    UserId = user.Id,
+            //    Name = "Integration",
+            //    Surname = "Employee",
+            //    Salary = 95_000,
+            //    EmployerId = employer.Id,
+            //    Order = 1,
+            //    IsArchived = false,
+            //    CreatedUtc = utcNow,
+            //    LastUpdatedUtc = utcNow,
+            //    Notes = "Integration test employee",
+            //    OnBoardingStatus = "Pending",
+            //    Rating = 5
+            //};
 
-            hrDbContext.Set<Employee>().Add(employee);
+            //hrDbContext.Set<Employee>().Add(employee);
 
-            await hrDbContext.SaveChangesAsync();
+            //await hrDbContext.SaveChangesAsync();
 
-            var employeeDepartment = new EmployeeDepartment
-            {
-                EmployeeId = employee.Id,
-                DepartmentId = department.Id
-            };
+            //var employeeDepartment = new EmployeeDepartment
+            //{
+            //    EmployeeId = employee.Id,
+            //    DepartmentId = department.Id
+            //};
 
-            hrDbContext.Set<EmployeeDepartment>().Add(employeeDepartment);
+            //hrDbContext.Set<EmployeeDepartment>().Add(employeeDepartment);
 
-            await hrDbContext.SaveChangesAsync();
+            //await hrDbContext.SaveChangesAsync();
 
-            return employee.Id;
+            //return employee.Id;
+
+            return user.Id;
         }
     }
 }

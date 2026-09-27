@@ -1,8 +1,10 @@
-﻿using Demo.Orchestration.HR.Orchestrators;
+﻿using DataArc.Orchestrator;
+
+using Demo.Orchestration.HR.Orchestrators;
 using Demo.Orchestration.HR.Orchestrators.Input;
 using Demo.Orchestration.HR.Orchestrators.Ouput;
+using Demo.Orchestration.HR.Orchestrators.Output;
 using Demo.Orchestration.HR.Ports;
-using DataArc.Orchestrator;
 
 namespace Demo.Application.Modules.Modules.HR.Adapters
 {
@@ -14,16 +16,13 @@ namespace Demo.Application.Modules.Modules.HR.Adapters
             _orchestrator = orchestrator;
         }
 
-        public async Task<OnboardEmployeeOutput> OnboardEmployeeAsync(OnboardEmployeeInput onBoardEmployeeInput)
-            => await _orchestrator
-                .OrchestrateAsync<OnboardEmployeeOrchestrator, OnboardEmployeeOutput>(
-                    onBoardEmployeeInput,
-                    new OnboardEmployeeOutput());
+        public async Task<PrepareEmployeeOnboardingOutput> PrepareEmployeeOnboardingAsync(PrepareEmployeeOnboardingInput input) 
+            => await _orchestrator.OrchestrateAsync<
+                PrepareEmployeeOnboardingOrchestrator, 
+                    PrepareEmployeeOnboardingOutput>(input, new PrepareEmployeeOnboardingOutput());
 
-        public async Task<ImportEmployeesOutput> ImportEmployeesDataAsync(ImportEmployeesInput input) 
-            => await _orchestrator
-                .OrchestrateAsync<ImportEmployeesDataOrchestrator, ImportEmployeesOutput>(
-                    input,
-                    new ImportEmployeesOutput());
+        public async Task<OnboardEmployeeOutput> OnboardEmployeeAsync(OnboardEmployeeInput input) 
+            => await _orchestrator.OrchestrateAsync<
+                    OnboardEmployeeOrchestrator, OnboardEmployeeOutput>(input, new OnboardEmployeeOutput());
     }
 }

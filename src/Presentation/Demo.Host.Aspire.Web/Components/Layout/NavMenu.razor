@@ -2,7 +2,7 @@
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">DataArc</a>
+        <a class="navbar-brand" href="">Clean Architecture Demo</a>
     </div>
 </div>
 
@@ -12,17 +12,45 @@
     <nav class="nav flex-column">
 
         <div class="nav-item px-3">
+            <div class="nav-section">
+                <span class="bi bi-people-fill" aria-hidden="true"></span>
+                Home
+            </div>
+        </div>
+
+        <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill" aria-hidden="true"></span>
-                DataArc Orchestration
+                <span class="bi bi-database-fill-add" aria-hidden="true"></span>
+                Demo Overview
             </NavLink>
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="employees/import">
+            <NavLink class="nav-link" href="/DemoSetup">
                 <span class="bi bi-database-fill-add" aria-hidden="true"></span>
-                Import Employees
+                Demo Setup
             </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <div class="nav-section">
+                <span class="bi bi-person-fill-lock" aria-hidden="true"></span>
+                Auth
+            </div>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="users/import">
+                <span class="bi bi-database-fill-add" aria-hidden="true"></span>
+                Import Users
+            </NavLink>
+        </div>
+        
+        <div class="nav-item px-3">
+            <div class="nav-section">
+                <span class="bi bi-people-fill" aria-hidden="true"></span>
+                Human Resources
+            </div>
         </div>
 
         <div class="nav-item px-3">
@@ -30,6 +58,27 @@
                 <span class="bi bi-person-check-fill" aria-hidden="true"></span>
                 Onboarding
             </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <div class="nav-section">
+                <span class="bi bi-cash-stack" aria-hidden="true"></span>
+                Finance
+            </div>
+        </div>
+
+        <div class="nav-item px-3">
+            <div class="nav-section">
+                <span class="bi bi-pc-display" aria-hidden="true"></span>
+                IT
+            </div>
+        </div>
+
+        <div class="nav-item px-3">
+            <div class="nav-section">
+                <span class="bi bi-gear-fill" aria-hidden="true"></span>
+                Operations
+            </div>
         </div>
 
     </nav>

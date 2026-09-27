@@ -1,10 +1,11 @@
 ﻿using DataArc.Observer;
+
 using Demo.Application.Domain.HR.Policies;
 using Demo.Application.Domain.HR.Policies.Contexts;
 using Demo.Application.Domain.HR.ValueObjects;
 using Demo.Application.Features.HR.EmployeeOnboarding.Dtos;
 using Demo.Application.Features.HR.EmployeeOnboarding.Services;
-using Demo.Application.Features.HR.Repositories;
+
 using Demo.Orchestration.HR.Orchestrators.Input;
 using Demo.Orchestration.HR.Ports;
 
@@ -12,47 +13,70 @@ namespace Demo.Application.Modules.Modules.HR.Services
 {
     internal sealed class EmployeeOnboardingService : IEmployeeOnboardingService
     {
-        private readonly IHRRepository _hRRepository;
-        private readonly IHROrchestrationPort _HROrchestration;
-        private readonly IEmployeeOnboardingPolicy _onboardEmployeePolicy;
+        private readonly IHROrchestrationPort _hrOrchestration;
+        private readonly IEmployeeOnboardingPolicy _employeeOnboardingPolicy;
         private readonly IObservableEventHandler _observableEventHandler;
 
         public EmployeeOnboardingService(
-            IHRRepository hRRepository,
-            IHROrchestrationPort HROrchestration,
+            IHROrchestrationPort hrOrchestration,
             IObservableEventHandler observableEventHandler,
-            IEmployeeOnboardingPolicy onboardEmployeePolicy)
+            IEmployeeOnboardingPolicy employeeOnboardingPolicy)
         {
-            _hRRepository = hRRepository;
-            _HROrchestration = HROrchestration;
-            _onboardEmployeePolicy = onboardEmployeePolicy;
+            _hrOrchestration = hrOrchestration;
             _observableEventHandler = observableEventHandler;
+            _employeeOnboardingPolicy = employeeOnboardingPolicy;
         }
 
         public async Task<OnboardEmployeeResponseDto> OnboardEmployeeAsync(OnboardEmployeeRequestDto request)
         {
-            var employee = await _hRRepository.GetEmployeeOnboardingCandidate(request.EmployeeId);
+            /*
+             * Prepare the onboarding state across the participating
+             * application persistence boundaries.
+             */
+            var preparedEmployee = await _hrOrchestration.PrepareEmployeeOnboardingAsync(new PrepareEmployeeOnboardingInput{UserId = request.UserId});
 
-            if (employee == null)
+            if (!preparedEmployee.IsSuccess)
             {
                 return new OnboardEmployeeResponseDto
                 {
                     IsSuccess = false,
-                    EmployeeId = request.EmployeeId,
-                    FailureReason = "Employee onboarding context could not be prepared."
+                    FailureReason = preparedEmployee.FailureReason
                 };
             }
 
-            var onboardingCandidate = new OnBoardEmployeeValueObject(status: employee.OnBoardingStatus);
+            /*
+             * The onboarding candidate must originate from Identity.
+             */
+            if (!preparedEmployee.UserExists)
+            {
+                return new OnboardEmployeeResponseDto
+                {
+                    IsSuccess = false,
+                    FailureReason =
+                        "The selected identity user could not be found."
+                };
+            }
 
+            /*
+             * Build the business-policy context from the persisted
+             * state prepared by the orchestration layer.
+             *
+             * No persistence mechanics leak into the domain policy.
+             */
             var policyContext = new OnboardEmployeePolicyContext(
-                onboardingCandidate);
+                new OnBoardEmployeeValueObject(
+                    preparedEmployee.OnBoardingStatus),
+                    preparedEmployee.HasDepartment,
+                    preparedEmployee.PayrollRecordExists,
+                    preparedEmployee.AccessRequestExists,
+                    preparedEmployee.OnboardingTaskExists);
 
-            var policyResult = _onboardEmployeePolicy.Apply(
-                policyContext);
+            var policyResult = _employeeOnboardingPolicy.Apply(policyContext);
 
-            await _observableEventHandler.DispatchAsync(
-                policyResult.DomainEvents);
+            /*
+             * Publish the domain events produced by the policy decision.
+             */
+            await _observableEventHandler.DispatchAsync(policyResult.DomainEvents);
 
             if (!policyResult.IsSuccess)
             {
@@ -60,28 +84,29 @@ namespace Demo.Application.Modules.Modules.HR.Services
                 {
                     IsSuccess = false,
                     FailureReason = policyResult.Message,
-                    EmployeeId = employee.Id,
-                    Name = employee.Name,
-                    Surname = employee.Surname,
-                    Rating = employee.Rating,
-                    Salary = employee.Salary,
                 };
             }
 
-            var output = await _HROrchestration.OnboardEmployeeAsync(
-                new OnboardEmployeeInput(
-                    request.EmployeeId,
-                    request.AnnualSalary,
-                    request.CurrencyCode,
-                    request.Reason,
-                    DateTimeOffset.UtcNow));
+            /*
+             * The policy has approved the workflow.
+             * The orchestration layer now performs the coordinated
+             * persistence operation.
+             */
+            var output = 
+                await _hrOrchestration.OnboardEmployeeAsync(
+                    new OnboardEmployeeInput(
+                        request.UserId,
+                        request.AnnualSalary,
+                        request.CurrencyCode,
+                        request.Reason,
+                        DateTimeOffset.UtcNow));
 
             if (!output.IsSuccess)
             {
                 return new OnboardEmployeeResponseDto
                 {
                     IsSuccess = false,
-                    FailureReason = output.FailureReason,
+                    FailureReason = output.FailureReason
                 };
             }
 
@@ -89,12 +114,8 @@ namespace Demo.Application.Modules.Modules.HR.Services
             {
                 IsSuccess = true,
                 FailureReason = null,
-                EmployeeId = employee.Id,
-                Name = employee.Name,
-                Surname = employee.Surname,
-                Rating = employee.Rating,
-                Salary = employee.Salary,
-                PayrollRecordId = output.PayrollRecordId,
+                EmployeeId = output.EmployeeId,
+                PayrollRecordId = output.PayrollRecordId
             };
         }
     }

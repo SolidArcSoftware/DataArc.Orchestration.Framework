@@ -1,10 +1,13 @@
 ﻿using DataArc.Orchestrator;
+
 using Demo.Orchestration.HR.Orchestrators.Input;
 using Demo.Orchestration.HR.Orchestrators.Ouput;
 using Demo.Persistence.DbContexts;
 using Demo.Persistence.DbModels;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Logging;
 
 namespace Demo.Orchestration.HR.Orchestrators
 {
@@ -15,144 +18,53 @@ namespace Demo.Orchestration.HR.Orchestrators
         private readonly IDbContextFactory<HrDbContext> _hrDbContextFactory;
         private readonly IDbContextFactory<ItDbContext> _itDbContextFactory;
         private readonly IDbContextFactory<OperationsDbContext> _operationsDbContextFactory;
+        private readonly ILogger<OnboardEmployeeOrchestrator> _logger;
 
         public OnboardEmployeeOrchestrator(
             IDbContextFactory<FinanceDbContext> financeDbContextFactory,
             IDbContextFactory<HrDbContext> hrDbContextFactory,
             IDbContextFactory<ItDbContext> itDbContextFactory,
-            IDbContextFactory<OperationsDbContext> operationsDbContextFactory)
+            IDbContextFactory<OperationsDbContext> operationsDbContextFactory,
+            ILogger<OnboardEmployeeOrchestrator> logger)
         {
             _financeDbContextFactory = financeDbContextFactory;
             _hrDbContextFactory = hrDbContextFactory;
             _itDbContextFactory = itDbContextFactory;
             _operationsDbContextFactory = operationsDbContextFactory;
+            _logger = logger;
         }
 
         public override async Task<OnboardEmployeeOutput> ExecuteAsync(
             OnboardEmployeeInput input,
             OnboardEmployeeOutput output)
         {
+            await using var hrDbContext =
+                await _hrDbContextFactory.CreateDbContextAsync();
+
+            await using var financeDbContext =
+                await _financeDbContextFactory.CreateDbContextAsync();
+
+            await using var itDbContext =
+                await _itDbContextFactory.CreateDbContextAsync();
+
+            await using var operationsDbContext =
+                await _operationsDbContextFactory.CreateDbContextAsync();
+
+            IDbContextTransaction? transaction = null;
+
             try
             {
-                await using var hrDbContext =
-                    await _hrDbContextFactory.CreateDbContextAsync();
-
-                await using var financeDbContext =
-                    await _financeDbContextFactory.CreateDbContextAsync();
-
-                await using var itDbContext =
-                    await _itDbContextFactory.CreateDbContextAsync();
-
-                await using var operationsDbContext =
-                    await _operationsDbContextFactory.CreateDbContextAsync();
-
-                var employee = await hrDbContext
-                    .Set<Employee>()
-                    .FirstOrDefaultAsync(employee =>
-                        employee.Id == input.EmployeeId);
-
-                if (employee is null)
-                {
-                    output.IsSuccess = false;
-                    output.FailureReason =
-                        "Employee onboarding could not be started because the employee was not found.";
-
-                    return output;
-                }
-
-                var employeeDepartment = await hrDbContext
-                    .Set<EmployeeDepartment>()
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(employeeDepartment =>
-                        employeeDepartment.EmployeeId == input.EmployeeId);
-
-                if (employeeDepartment is null)
-                {
-                    output.IsSuccess = false;
-                    output.FailureReason =
-                        "Employee onboarding could not be started because the employee is not assigned to a department.";
-
-                    return output;
-                }
-
-                var payrollRecord = await financeDbContext
-                    .Set<PayrollRecord>()
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(record =>
-                        record.EmployeeId == input.EmployeeId);
-
-                var accessRequest = await itDbContext
-                    .Set<AccessRequest>()
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(request =>
-                        request.EmployeeId == input.EmployeeId);
-
-                var onboardingTask = await operationsDbContext
-                    .Set<OnboardingTask>()
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(task =>
-                        task.EmployeeId == input.EmployeeId);
-
-                if (payrollRecord is not null
-                    || accessRequest is not null
-                    || onboardingTask is not null)
-                {
-                    output.IsSuccess = false;
-                    output.FailureReason =
-                        "Employee onboarding could not be started because onboarding records already exist.";
-
-                    if (payrollRecord is not null)
-                    {
-                        output.PayrollRecordId = payrollRecord.Id;
-                    }
-
-                    return output;
-                }
-
-                var createdOnUtc = DateTimeOffset.UtcNow;
-
-                payrollRecord = new PayrollRecord
-                {
-                    EmployeeId = input.EmployeeId,
-                    AnnualSalary = input.AnnualSalary,
-                    CurrencyCode = input.CurrencyCode,
-                    CreatedOnUtc = createdOnUtc,
-                    IsActive = true
-                };
-
-                accessRequest = new AccessRequest
-                {
-                    EmployeeId = input.EmployeeId,
-                    AccessLevel = "Standard",
-                    EmailAddress =
-                        $"employee-{input.EmployeeId}@solidarcsoftware.com",
-                    RequestStatus = "Requested",
-                    RequestedOnUtc = createdOnUtc,
-                    CompletedOnUtc = null
-                };
-
-                onboardingTask = new OnboardingTask
-                {
-                    EmployeeId = input.EmployeeId,
-                    TaskName = "Complete employee onboarding",
-                    TaskStatus = "Created",
-                    CreatedOnUtc = createdOnUtc,
-                    DueDateUtc = input.EffectiveOnUtc,
-                    CompletedOnUtc = null
-                };
-
-                employee.OnBoardingStatus = "Active";
-
                 /*
-                 * All four DbContexts represent boundaries within the
-                 * same physical relational database.
+                 * All DbContexts represent application boundaries inside
+                 * the same physical relational database.
                  *
-                 * Share the HR context's connection so that all four
-                 * contexts can participate in a single local transaction.
-                 *
-                 * See DataArc.EntityFrameworkCore.SqlServer for advanced
-                 * multi-DbContext atomic transaction support.
+                 * HR owns the physical connection and transaction.
+                 * Finance, IT and Operations participate in the same
+                 * local SQL Server transaction.
                  */
+                transaction =
+                    await hrDbContext.Database.BeginTransactionAsync();
+
                 var connection =
                     hrDbContext.Database.GetDbConnection();
 
@@ -168,60 +80,237 @@ namespace Demo.Orchestration.HR.Orchestrators
                     connection,
                     contextOwnsConnection: false);
 
-                await using var transaction =
-                    await hrDbContext.Database.BeginTransactionAsync();
-
-                var dbTransaction =
-                    transaction.GetDbTransaction();
-
                 await financeDbContext.Database.UseTransactionAsync(
-                    dbTransaction);
+                    transaction.GetDbTransaction());
 
                 await itDbContext.Database.UseTransactionAsync(
-                    dbTransaction);
+                    transaction.GetDbTransaction());
 
                 await operationsDbContext.Database.UseTransactionAsync(
-                    dbTransaction);
+                    transaction.GetDbTransaction());
 
-                try
-                {
-                    financeDbContext
-                        .Set<PayrollRecord>()
-                        .Add(payrollRecord);
+                /*
+                 * The onboarding flow starts from an Identity UserId.
+                 *
+                 * The selected user must not already have an HR Employee
+                 * record. The policy should normally prevent this path,
+                 * but the orchestrator also protects the persistence boundary.
+                 */
+                var employeeExists =
+                    await hrDbContext.Employee!
+                        .AsNoTracking()
+                        .AnyAsync(employee =>
+                            employee.UserId == input.UserId);
 
-                    itDbContext
-                        .Set<AccessRequest>()
-                        .Add(accessRequest);
-
-                    operationsDbContext
-                        .Set<OnboardingTask>()
-                        .Add(onboardingTask);
-
-                    await financeDbContext.SaveChangesAsync();
-                    await itDbContext.SaveChangesAsync();
-                    await operationsDbContext.SaveChangesAsync();
-                    await hrDbContext.SaveChangesAsync();
-
-                    await transaction.CommitAsync();
-                }
-                catch
+                if (employeeExists)
                 {
                     await transaction.RollbackAsync();
-                    throw;
+
+                    output.IsSuccess = false;
+                    output.FailureReason =
+                        "The selected user has already been onboarded as an employee.";
+
+                    return output;
                 }
 
+                /*
+                 * Resolve the demo HR reference data used by the
+                 * onboarding workflow.
+                 */
+                var employer =
+                    await hrDbContext.Set<Employer>()
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(employer =>
+                            employer.Name == "SolidArcSoftware");
+
+                if (employer == null)
+                {
+                    await transaction.RollbackAsync();
+
+                    output.IsSuccess = false;
+                    output.FailureReason =
+                        "The demo employer could not be found.";
+
+                    return output;
+                }
+
+                var department =
+                    await hrDbContext.Set<Department>()
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(department =>
+                            department.Name == "Information Technology");
+
+                if (department == null)
+                {
+                    await transaction.RollbackAsync();
+
+                    output.IsSuccess = false;
+                    output.FailureReason =
+                        "The demo department could not be found.";
+
+                    return output;
+                }
+
+                var createdUtc = DateTime.UtcNow;
+                DateTimeOffset? createdOnUtc = DateTimeOffset.UtcNow;
+
+                /*
+                 * Materialise the HR Employee from the Identity user
+                 * selected by UserId.
+                 */
+                var employee = new Employee
+                {
+                    UserId = input.UserId,
+                    Salary = input.AnnualSalary,
+                    EmployerId = employer.Id,
+                    IsArchived = false,
+                    CreatedUtc = createdUtc,
+                    LastUpdatedUtc = createdOnUtc,
+                    Notes = input.Reason,
+                    OnBoardingStatus = "Completed"
+                };
+
+                await hrDbContext.Employee!
+                    .AddAsync(employee);
+
+                /*
+                 * Persist the Employee first so SQL Server generates
+                 * Employee.Id.
+                 *
+                 * This insert remains inside the same uncommitted
+                 * transaction.
+                 */
+                await hrDbContext.SaveChangesAsync();
+
+                /*
+                 * The generated EmployeeId is now used by the remaining
+                 * records participating in the onboarding workflow.
+                 */
+                var employeeDepartment = new EmployeeDepartment
+                {
+                    EmployeeId = employee.Id,
+                    DepartmentId = department.Id
+                };
+
+                var payrollRecord = new PayrollRecord
+                {
+                    EmployeeId = employee.Id,
+                    AnnualSalary = input.AnnualSalary,
+                    CurrencyCode = input.CurrencyCode,
+                    CreatedOnUtc = createdOnUtc,
+                    IsActive = true
+                };
+
+                var accessRequest = new AccessRequest
+                {
+                    EmployeeId = employee.Id,
+                    AccessLevel = "Standard",
+                    EmailAddress =
+                        $"employee-{employee.Id}@solidarcsoftware.com",
+                    RequestStatus = "Requested",
+                    RequestedOnUtc = createdOnUtc
+                };
+
+                var onboardingTask = new OnboardingTask
+                {
+                    EmployeeId = employee.Id,
+                    TaskName = "Complete employee onboarding",
+                    TaskStatus = "Created",
+                    CreatedOnUtc = createdOnUtc,
+                    DueDateUtc = input.EffectiveOnUtc
+                };
+
+                /*
+                 * Register the remaining changes across the participating
+                 * persistence boundaries.
+                 */
+                await hrDbContext.EmployeeDepartment!
+                    .AddAsync(employeeDepartment);
+
+                await financeDbContext.PayrollRecord!
+                    .AddAsync(payrollRecord);
+
+                await itDbContext.AccessRequest!
+                    .AddAsync(accessRequest);
+
+                await operationsDbContext.OnboardingTask!
+                    .AddAsync(onboardingTask);
+
+                /*
+                 * Persist sequentially because every participating
+                 * DbContext shares the same physical connection and
+                 * local transaction.
+                 */
+                await hrDbContext.SaveChangesAsync();
+                await financeDbContext.SaveChangesAsync();
+                await itDbContext.SaveChangesAsync();
+                await operationsDbContext.SaveChangesAsync();
+
+                /*
+                 * Nothing becomes permanent until every participating
+                 * DbContext has completed successfully.
+                 */
+                await transaction.CommitAsync();
+
                 output.IsSuccess = true;
-                output.FailureReason = null;
+                output.EmployeeId = employee.Id;
                 output.PayrollRecordId = payrollRecord.Id;
 
                 return output;
             }
+            catch (OperationCanceledException)
+            {
+                if (transaction != null)
+                {
+                    try
+                    {
+                        await transaction.RollbackAsync();
+                    }
+                    catch (Exception rollbackException)
+                    {
+                        _logger.LogError(
+                            rollbackException,
+                            "Rollback failed after employee onboarding was cancelled for user {UserId}.",
+                            input.UserId);
+                    }
+                }
+
+                throw;
+            }
             catch (Exception exception)
             {
+                if (transaction != null)
+                {
+                    try
+                    {
+                        await transaction.RollbackAsync();
+                    }
+                    catch (Exception rollbackException)
+                    {
+                        _logger.LogError(
+                            rollbackException,
+                            "Rollback failed after employee onboarding failed for user {UserId}.",
+                            input.UserId);
+                    }
+                }
+
+                _logger.LogError(
+                    exception,
+                    "Employee onboarding failed for user {UserId}.",
+                    input.UserId);
+
                 output.IsSuccess = false;
-                output.FailureReason = exception.Message;
+                output.FailureReason =
+                    "Employee onboarding could not be completed.";
 
                 return output;
+            }
+            finally
+            {
+                if (transaction != null)
+                {
+                    await transaction.DisposeAsync();
+                }
             }
         }
     }
