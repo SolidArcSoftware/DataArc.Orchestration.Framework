@@ -7,12 +7,6 @@ namespace Demo.Persistence.Database.Creator
 {
     internal class DatabaseCreator : IDatabaseCreator
     {
-        readonly IDatabaseFactory _databaseFactory;
-        public DatabaseCreator(IDatabaseFactory databaseFactory)
-        {
-            _databaseFactory = databaseFactory;
-        }
-
         public bool CanConnect()
         {
             throw new NotImplementedException();
@@ -25,9 +19,7 @@ namespace Demo.Persistence.Database.Creator
 
         public bool EnsureCreated()
         {
-
-           
-            return true;
+            throw new NotImplementedException();
         }
 
         public Task<bool> EnsureCreatedAsync(CancellationToken cancellationToken = default)
@@ -37,18 +29,7 @@ namespace Demo.Persistence.Database.Creator
 
         public bool EnsureDeleted()
         {
-            //Drop database using isolated dbcontexts
-            var databaseBuilder = _databaseFactory.CreateDatabaseBuilder();
-
-            var demoDatabase = databaseBuilder
-                .IncludeDbContext<HrDbContext>()
-                .IncludeDbContext<ItDbContext>()
-                .IncludeDbContext<OperationsDbContext>()
-                .IncludeDbContext<FinanceDbContext>()
-                .Build(applyChanges: true);
-
-            demoDatabase.ExecuteDrop();
-            return true;
+            throw new NotImplementedException();
         }
 
         public Task<bool> EnsureDeletedAsync(CancellationToken cancellationToken = default)

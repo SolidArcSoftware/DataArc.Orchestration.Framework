@@ -14,6 +14,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9D6BCB9A-C495-4608-9CD8-EF010B77BA61}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		setup\SetupDemoDatabase.sql = setup\SetupDemoDatabase.sql
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9E3AF038-9970-4811-97E5-7852D7A4E44D}"

@@ -134,40 +134,6 @@ namespace Demo.Integration.Tests
 
             await hrDbContext.SaveChangesAsync();
 
-            //var utcNow = DateTime.UtcNow;
-
-            //var employee = new Employee
-            //{
-            //    UserId = user.Id,
-            //    Name = "Integration",
-            //    Surname = "Employee",
-            //    Salary = 95_000,
-            //    EmployerId = employer.Id,
-            //    Order = 1,
-            //    IsArchived = false,
-            //    CreatedUtc = utcNow,
-            //    LastUpdatedUtc = utcNow,
-            //    Notes = "Integration test employee",
-            //    OnBoardingStatus = "Pending",
-            //    Rating = 5
-            //};
-
-            //hrDbContext.Set<Employee>().Add(employee);
-
-            //await hrDbContext.SaveChangesAsync();
-
-            //var employeeDepartment = new EmployeeDepartment
-            //{
-            //    EmployeeId = employee.Id,
-            //    DepartmentId = department.Id
-            //};
-
-            //hrDbContext.Set<EmployeeDepartment>().Add(employeeDepartment);
-
-            //await hrDbContext.SaveChangesAsync();
-
-            //return employee.Id;
-
             return user.Id;
         }
     }

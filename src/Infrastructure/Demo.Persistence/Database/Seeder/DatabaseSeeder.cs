@@ -17,64 +17,79 @@ namespace Demo.Persistence.Database.Seeder
 
         public async Task<int> SeedDatabaseAsync()
         {
-            int rowsAffected = 0;
-
-            await using var dbContext =
-                await _hrDbContextFactory.CreateDbContextAsync();
-
-            /*
-             * Seed only the reference data required by the demo.
-             *
-             * Identity users are imported through the Auth workflow.
-             * Employees and all downstream onboarding records are created
-             * by the employee onboarding workflow.
-             */
-
-            var employerExists =
-                await dbContext.Set<Employer>()
-                    .AsNoTracking()
-                    .AnyAsync(employer =>
-                        employer.Name == "SolidArcSoftware");
-
-            if (!employerExists)
+            try
             {
-                var employer = new Employer
+                int rowsAffected = 0;
+
+                await using var dbContext =
+                    await _hrDbContextFactory.CreateDbContextAsync();
+
+                //Test Connection
+                if (!await dbContext.Database.CanConnectAsync())
                 {
-                    Name = "SolidArcSoftware",
-                    Description =
-                        "Demo employer used by the DataArc employee onboarding workflow."
-                };
+                    throw new InvalidOperationException(
+                        "The DataArc orchestration demo database is not available. " +
+                        "Run 'setup/SetupDemoDatabase.sql' before starting the demo.");
+                }
 
-                await dbContext.Set<Employer>()
-                    .AddAsync(employer);
-            }
+                /*
+                 * Seed only the reference data required by the demo.
+                 *
+                 * Identity users are imported through the Auth workflow.
+                 * Employees and all downstream onboarding records are created
+                 * by the employee onboarding workflow.
+                 */
 
-            var departmentExists =
-                await dbContext.Set<Department>()
-                    .AsNoTracking()
-                    .AnyAsync(department =>
-                        department.Name == "Information Technology");
+                var employerExists =
+                    await dbContext.Set<Employer>()
+                        .AsNoTracking()
+                        .AnyAsync(employer =>
+                            employer.Name == "SolidArcSoftware");
 
-            if (!departmentExists)
-            {
-                var department = new Department
+                if (!employerExists)
                 {
-                    Name = "Information Technology",
-                    Description =
-                        "Information Technology Department"
-                };
+                    var employer = new Employer
+                    {
+                        Name = "SolidArcSoftware",
+                        Description =
+                            "Demo employer used by the DataArc employee onboarding workflow."
+                    };
 
-                await dbContext.Set<Department>()
-                    .AddAsync(department);
+                    await dbContext.Set<Employer>()
+                        .AddAsync(employer);
+                }
+
+                var departmentExists =
+                    await dbContext.Set<Department>()
+                        .AsNoTracking()
+                        .AnyAsync(department =>
+                            department.Name == "Information Technology");
+
+                if (!departmentExists)
+                {
+                    var department = new Department
+                    {
+                        Name = "Information Technology",
+                        Description =
+                            "Information Technology Department"
+                    };
+
+                    await dbContext.Set<Department>()
+                        .AddAsync(department);
+                }
+
+                if (dbContext.ChangeTracker.HasChanges())
+                {
+                    rowsAffected +=
+                        await dbContext.SaveChangesAsync();
+                }
+
+                return rowsAffected;
             }
-
-            if (dbContext.ChangeTracker.HasChanges())
+            catch
             {
-                rowsAffected +=
-                    await dbContext.SaveChangesAsync();
+                throw;
             }
-
-            return rowsAffected;
         }
     }
 }
