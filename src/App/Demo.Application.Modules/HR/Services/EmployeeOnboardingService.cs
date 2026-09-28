@@ -66,6 +66,7 @@ namespace Demo.Application.Modules.Modules.HR.Services
             var policyContext = new OnboardEmployeePolicyContext(
                 new OnBoardEmployeeValueObject(
                     preparedEmployee.OnBoardingStatus),
+                    preparedEmployee.EmployeeExists,
                     preparedEmployee.HasDepartment,
                     preparedEmployee.PayrollRecordExists,
                     preparedEmployee.AccessRequestExists,

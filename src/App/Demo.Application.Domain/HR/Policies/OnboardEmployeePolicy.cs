@@ -22,6 +22,14 @@ namespace Demo.Application.Domain.HR.Policies
                         "The employee has already been onboarded"));
             }
 
+            if (context.EmployeeExists)
+            {
+                return PolicyResult.Fail(
+                    "Employee onboarding cannot be completed because an employee already exists for the selected identity user.",
+                    new OnboardEmployeeRejectedEvent(
+                        "An employee already exists for the selected identity user"));
+            }
+
             if (context.PayrollRecordExists ||
                 context.AccessRequestExists ||
                 context.OnboardingTaskExists)
