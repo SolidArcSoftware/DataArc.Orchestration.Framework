@@ -1,16 +1,16 @@
-﻿using Demo.Application.Domain.HR.Policies;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
+using Demo.Application.Domain.HR.Policies;
 using Demo.Application.Features.HR.EmployeeImports.Services;
 using Demo.Application.Features.HR.EmployeeOnboarding.Services;
-using Demo.Application.Features.HR.Repositories;
 using Demo.Application.Modules.Auth.Services;
 using Demo.Application.Modules.Modules.HR.Adapters;
 using Demo.Application.Modules.Modules.HR.Services;
 using Demo.Orchestration.HR;
 using Demo.Orchestration.HR.Ports;
 using Demo.Persistence.Modules.HR;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Demo.Application.Modules.HR
 {
@@ -23,9 +23,6 @@ namespace Demo.Application.Modules.HR
 
             //HR Persistence
             services.AddHrPersistence(configurationManager);
-
-            //HR Repositories
-            services.AddScoped<IHRRepository, HRRepository>();
 
             // HR Orchestration
             services.AddHROrchestration();
