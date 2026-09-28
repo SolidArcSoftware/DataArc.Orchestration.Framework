@@ -104,13 +104,8 @@ namespace Demo.Orchestration.HR.Orchestrators
 
                 if (employeeExists)
                 {
-                    await transaction.RollbackAsync();
-
-                    output.IsSuccess = false;
-                    output.FailureReason =
-                        "The selected user has already been onboarded as an employee.";
-
-                    return output;
+                    throw new InvalidOperationException(
+                        "An employee already exists for the selected identity user.");
                 }
 
                 /*
@@ -125,13 +120,8 @@ namespace Demo.Orchestration.HR.Orchestrators
 
                 if (employer == null)
                 {
-                    await transaction.RollbackAsync();
-
-                    output.IsSuccess = false;
-                    output.FailureReason =
-                        "The demo employer could not be found.";
-
-                    return output;
+                    throw new InvalidOperationException(
+                        "The demo employer could not be found.");
                 }
 
                 var department =
@@ -142,13 +132,8 @@ namespace Demo.Orchestration.HR.Orchestrators
 
                 if (department == null)
                 {
-                    await transaction.RollbackAsync();
-
-                    output.IsSuccess = false;
-                    output.FailureReason =
-                        "The demo department could not be found.";
-
-                    return output;
+                    throw new InvalidOperationException(
+                        "The demo department could not be found.");
                 }
 
                 var createdUtc = DateTime.UtcNow;
@@ -298,11 +283,7 @@ namespace Demo.Orchestration.HR.Orchestrators
                     "Employee onboarding failed for user {UserId}.",
                     input.UserId);
 
-                output.IsSuccess = false;
-                output.FailureReason =
-                    "Employee onboarding could not be completed.";
-
-                return output;
+                throw;
             }
             finally
             {

@@ -21,7 +21,7 @@ namespace Demo.Orchestration.HR
             services.AddDataArcObserver(observers => 
             {
                 observers.Add<OnboardEmployeeRejectedEventObserver>();
-                observers.Add<OnboardEmployeeSuccessEventObserver>();
+                observers.Add<OnboardEmployeeAcceptedEventObserver>();
             });
 
             return services;
