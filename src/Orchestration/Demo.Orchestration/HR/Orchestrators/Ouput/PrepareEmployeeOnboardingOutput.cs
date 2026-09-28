@@ -19,7 +19,5 @@ namespace Demo.Orchestration.HR.Orchestrators.Output
         public bool PayrollRecordExists { get; set; }
         public bool AccessRequestExists { get; set; }
         public bool OnboardingTaskExists { get; set; }
-        public bool IsSuccess { get; set; }
-        public string FailureReason { get; set; } = string.Empty;
     }
 }

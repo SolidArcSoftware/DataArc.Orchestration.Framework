@@ -14,6 +14,14 @@ namespace Demo.Application.Domain.HR.Policies
                     "Onboarding policy context was null");
             }
 
+            if (!context.Employee.UserExists)
+            {
+                return PolicyResult.Fail(
+                    "Employee onboarding cannot be completed because the selected identity user could not be found.",
+                    new OnboardEmployeeRejectedEvent(
+                        "The selected identity user could not be found"));
+            }
+
             if (context.Employee.IsOnboarded)
             {
                 return PolicyResult.Fail(
@@ -22,7 +30,7 @@ namespace Demo.Application.Domain.HR.Policies
                         "The employee has already been onboarded"));
             }
 
-            if (context.EmployeeExists)
+            if (context.Employee.EmployeeExists)
             {
                 return PolicyResult.Fail(
                     "Employee onboarding cannot be completed because an employee already exists for the selected identity user.",
@@ -30,9 +38,7 @@ namespace Demo.Application.Domain.HR.Policies
                         "An employee already exists for the selected identity user"));
             }
 
-            if (context.PayrollRecordExists ||
-                context.AccessRequestExists ||
-                context.OnboardingTaskExists)
+            if (context.Employee.HasExistingOnboardingRecords)
             {
                 return PolicyResult.Fail(
                     "Employee onboarding cannot be completed because onboarding records already exist.",

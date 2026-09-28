@@ -65,9 +65,7 @@ namespace Demo.Orchestration.HR.Orchestrators
 
                 if (user == null)
                 {
-                    output.IsSuccess = true;
                     output.UserExists = false;
-
                     return output;
                 }
 
@@ -104,9 +102,7 @@ namespace Demo.Orchestration.HR.Orchestrators
                  */
                 if (employee == null)
                 {
-                    output.IsSuccess = true;
                     output.EmployeeExists = false;
-
                     return output;
                 }
 
@@ -171,8 +167,6 @@ namespace Demo.Orchestration.HR.Orchestrators
                 output.OnboardingTaskExists =
                     await onboardingTaskExistsTask;
 
-                output.IsSuccess = true;
-
                 return output;
             }
             catch (OperationCanceledException)
@@ -186,11 +180,7 @@ namespace Demo.Orchestration.HR.Orchestrators
                     "Failed to prepare employee onboarding for user {UserName}.",
                     input.UserName);
 
-                output.IsSuccess = false;
-                output.FailureReason =
-                    "Employee onboarding preparation could not be completed.";
-
-                return output;
+                throw;
             }
         }
     }

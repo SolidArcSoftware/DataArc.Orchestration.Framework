@@ -152,7 +152,7 @@ namespace Demo.Orchestration.HR.Orchestrators
                     CreatedUtc = createdUtc,
                     LastUpdatedUtc = createdOnUtc,
                     Notes = input.Reason,
-                    OnBoardingStatus = "Completed"
+                    OnBoardingStatus = input.EmployeeOnboardingStatus
                 };
 
                 await hrDbContext.Employee!
@@ -183,42 +183,35 @@ namespace Demo.Orchestration.HR.Orchestrators
                     AnnualSalary = input.AnnualSalary,
                     CurrencyCode = input.CurrencyCode,
                     CreatedOnUtc = createdOnUtc,
-                    IsActive = true
+                    IsActive = input.PayrollIsActive
                 };
 
                 var accessRequest = new AccessRequest
                 {
                     EmployeeId = employee.Id,
-                    AccessLevel = "Standard",
+                    AccessLevel = input.AccessLevel,
                     EmailAddress = input.EmailAddress,
-                    RequestStatus = "Requested",
+                    RequestStatus = input.AccessRequestStatus,
                     RequestedOnUtc = createdOnUtc
                 };
 
                 var onboardingTask = new OnboardingTask
                 {
                     EmployeeId = employee.Id,
-                    TaskName = "Complete employee onboarding",
-                    TaskStatus = "Created",
+                    TaskName = input.OnboardingTaskName,
+                    TaskStatus = input.OnboardingTaskStatus,
                     CreatedOnUtc = createdOnUtc,
-                    DueDateUtc = input.EffectiveOnUtc
+                    DueDateUtc = input.DueDateOnUtc
                 };
 
                 /*
                  * Register the remaining changes across the participating
                  * persistence boundaries.
                  */
-                await hrDbContext.EmployeeDepartment!
-                    .AddAsync(employeeDepartment);
-
-                await financeDbContext.PayrollRecord!
-                    .AddAsync(payrollRecord);
-
-                await itDbContext.AccessRequest!
-                    .AddAsync(accessRequest);
-
-                await operationsDbContext.OnboardingTask!
-                    .AddAsync(onboardingTask);
+                await hrDbContext.EmployeeDepartment!.AddAsync(employeeDepartment);
+                await financeDbContext.PayrollRecord!.AddAsync(payrollRecord);
+                await itDbContext.AccessRequest!.AddAsync(accessRequest);
+                await operationsDbContext.OnboardingTask!.AddAsync(onboardingTask);
 
                 /*
                  * Persist sequentially because every participating
@@ -236,7 +229,6 @@ namespace Demo.Orchestration.HR.Orchestrators
                  */
                 await transaction.CommitAsync();
 
-                output.IsSuccess = true;
                 output.EmployeeId = employee.Id;
                 output.PayrollRecordId = payrollRecord.Id;
 

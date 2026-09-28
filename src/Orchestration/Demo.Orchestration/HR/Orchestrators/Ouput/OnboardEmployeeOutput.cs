@@ -6,7 +6,5 @@ namespace Demo.Orchestration.HR.Orchestrators.Ouput
     {
         public int EmployeeId { get; set; }
         public int PayrollRecordId { get; set; }
-        public bool IsSuccess { get; set; }
-        public string? FailureReason { get; set; }
     }
 }
