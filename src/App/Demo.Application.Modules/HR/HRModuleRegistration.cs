@@ -3,14 +3,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using Demo.Application.Domain.HR.Policies;
-using Demo.Application.Features.HR.EmployeeImports.Services;
 using Demo.Application.Features.HR.EmployeeOnboarding.Services;
-using Demo.Application.Modules.Auth.Services;
+
 using Demo.Application.Modules.Modules.HR.Adapters;
-using Demo.Application.Modules.Modules.HR.Services;
+using Demo.Persistence.Modules.HR;
+
 using Demo.Orchestration.HR;
 using Demo.Orchestration.HR.Ports;
-using Demo.Persistence.Modules.HR;
+
+using Demo.Application.Modules.HR.Services;
 
 namespace Demo.Application.Modules.HR
 {
@@ -20,21 +21,15 @@ namespace Demo.Application.Modules.HR
         {
             //HR Logging
             services.AddLogging();
-
             //HR Persistence
             services.AddHrPersistence(configurationManager);
-
             // HR Orchestration
             services.AddHROrchestration();
-
             // HR Orchestration Port & Adapters
             services.AddScoped<IHROrchestrationPort, HROrchestrationAdapter>();
-
             // HR Policies
             services.AddScoped<IEmployeeOnboardingPolicy, OnboardEmployeePolicy>();
-
             // HR features / services
-            services.TryAddScoped<IUserImportsService, UserImportsService>();
             services.TryAddScoped<IEmployeeOnboardingService, EmployeeOnboardingService>();
 
             return services;

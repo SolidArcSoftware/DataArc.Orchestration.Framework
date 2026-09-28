@@ -2,11 +2,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-using Demo.Application.Features.HR.EmployeeImports.Services;
-using Demo.Application.Modules.Auth.Adapters;
-using Demo.Application.Modules.Auth.Services;
 using Demo.Orchestration.Auth;
+using Demo.Application.Modules.Auth.Adapters;
 using Demo.Orchestration.Auth.Ports;
+
+
+using Demo.Application.Modules.Auth.Services;
+using Demo.Application.Features.Auth.UserImports.Services;
+
 using Demo.Persistence.Modules.Auth;
 
 namespace Demo.Application.Modules.Auth
@@ -17,16 +20,10 @@ namespace Demo.Application.Modules.Auth
         {
             // Auth Persistence
             services.AddIdentityPersistence(configurationManager);
-
-            // Auth Repositories
-            
-
             // Auth Orchestration
             services.AddAuthOrchestration();
-
             // Auth Orchestration Port & Adapters
             services.AddScoped<IAuthOrchestrationPort, AuthOrchestrationAdapter>();
-
             // Auth Policies
 
             // HR features / services

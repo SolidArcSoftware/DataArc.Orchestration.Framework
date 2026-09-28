@@ -11,6 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="HR\Entities\**" />
+    <EmbeddedResource Remove="HR\Entities\**" />
+    <None Remove="HR\Entities\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Demo.Application.Domain.SharedKernel\Demo.Application.Domain.SharedKernel.csproj" />
   </ItemGroup>
 

@@ -1,6 +1,7 @@
-﻿using DataArc.Orchestrator;
+﻿using Microsoft.Extensions.DependencyInjection;
+
+using DataArc.Orchestrator;
 using Demo.Orchestration.Auth.Orchestration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Demo.Orchestration.Auth
 {

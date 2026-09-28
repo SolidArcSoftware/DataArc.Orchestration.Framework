@@ -1,6 +1,6 @@
-﻿namespace Demo.Application.Features.HR.EmployeeImports.Dtos
+﻿namespace Demo.Application.Features.Auth.UserImports.Dtos
 {
-    public class ImportUserssResponseDto
+    public class ImportUsersResponseDto
     {
         public int TotalRecordsProcessed { get; set; }
         public List<string>? Errors { get; set; }

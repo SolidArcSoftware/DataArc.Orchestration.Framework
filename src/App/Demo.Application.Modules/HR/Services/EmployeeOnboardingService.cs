@@ -9,7 +9,7 @@ using Demo.Application.Features.HR.EmployeeOnboarding.Services;
 using Demo.Orchestration.HR.Orchestrators.Input;
 using Demo.Orchestration.HR.Ports;
 
-namespace Demo.Application.Modules.Modules.HR.Services
+namespace Demo.Application.Modules.HR.Services
 {
     internal sealed class EmployeeOnboardingService : IEmployeeOnboardingService
     {
@@ -27,8 +27,7 @@ namespace Demo.Application.Modules.Modules.HR.Services
             _employeeOnboardingPolicy = employeeOnboardingPolicy;
         }
 
-        public async Task<OnboardEmployeeResponseDto> OnboardEmployeeAsync(
-            OnboardEmployeeRequestDto request)
+        public async Task<OnboardEmployeeResponseDto> OnboardEmployeeAsync(OnboardEmployeeRequestDto request)
         {
             /*
              * Gather the persisted state required to evaluate the
@@ -73,13 +72,13 @@ namespace Demo.Application.Modules.Modules.HR.Services
              * while the PolicyResult remains the source of the response
              * returned to the caller.
              */
-            await _observableEventHandler.DispatchAsync(policyResult.DomainEvents);
+            await _observableEventHandler
+                .DispatchAsync(policyResult.DomainEvents);
 
             if (!policyResult.IsSuccess)
             {
                 return new OnboardEmployeeResponseDto
                 {
-                    IsSuccess = false,
                     FailureReason = policyResult.Message
                 };
             }
@@ -120,8 +119,6 @@ namespace Demo.Application.Modules.Modules.HR.Services
              */
             return new OnboardEmployeeResponseDto
             {
-                IsSuccess = true,
-                FailureReason = null,
                 EmployeeId = output.EmployeeId,
                 PayrollRecordId = output.PayrollRecordId
             };

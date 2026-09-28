@@ -6,10 +6,7 @@ namespace Demo.Orchestration.HR.Ports
 {
     public interface IHROrchestrationPort
     {
-        Task<PrepareEmployeeOnboardingOutput> PrepareEmployeeOnboardingAsync(
-            PrepareEmployeeOnboardingInput input);
-
-        Task<OnboardEmployeeOutput> OnboardEmployeeAsync(
-            OnboardEmployeeInput input);
+        Task<PrepareEmployeeOnboardingOutput> PrepareEmployeeOnboardingAsync(PrepareEmployeeOnboardingInput input);
+        Task<OnboardEmployeeOutput> OnboardEmployeeAsync(OnboardEmployeeInput input);
     }
 }

@@ -1,6 +1,7 @@
-﻿using Demo.Persistence.Modules.Operations;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
+using Demo.Persistence.Modules.Operations;
 
 namespace Demo.Application.Modules.Operations
 {
@@ -8,13 +9,8 @@ namespace Demo.Application.Modules.Operations
     {
         public static IServiceCollection AddOperationsModule(this IServiceCollection services, ConfigurationManager configurationManager)
         {
+            // Operations Persistence
             services.AddOperationsPersistence(configurationManager);
-
-            //Repositories
-            //Orchestration
-            //Orchestration Port & Adapters
-            //Policies
-            //features / services
 
             return services;
         }

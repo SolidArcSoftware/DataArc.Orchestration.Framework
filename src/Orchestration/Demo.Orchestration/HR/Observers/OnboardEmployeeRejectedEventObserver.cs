@@ -2,6 +2,7 @@
 using System.Diagnostics;
 
 using DataArc.Observer;
+
 using Demo.Application.Domain.HR.Events;
 using Demo.Orchestration.HR.Telemetry;
 

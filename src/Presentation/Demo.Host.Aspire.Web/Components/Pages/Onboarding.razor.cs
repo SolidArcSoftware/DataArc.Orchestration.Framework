@@ -147,14 +147,9 @@ public partial class Onboarding
         public string Reason { get; set; } = string.Empty;
     }
 
-    private sealed class OnboardEmployeeResponse
+    public sealed class OnboardEmployeeResponse
     {
-        public bool IsSuccess { get; set; }
-
-        public string? FailureReason { get; set; }
-
         public int EmployeeId { get; set; }
-
         public int PayrollRecordId { get; set; }
     }
 }

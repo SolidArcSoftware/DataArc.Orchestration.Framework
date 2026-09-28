@@ -1,9 +1,9 @@
-﻿using Demo.Application.Features.HR.EmployeeImports.Dtos;
+﻿using Demo.Application.Features.Auth.UserImports.Dtos;
 
-namespace Demo.Application.Features.HR.EmployeeImports.Services
+namespace Demo.Application.Features.Auth.UserImports.Services
 {
     public interface IUserImportsService
     {
-        Task<ImportUserssResponseDto> ImportUserData();
+        Task<ImportUsersResponseDto> ImportUserData();
     }
 }

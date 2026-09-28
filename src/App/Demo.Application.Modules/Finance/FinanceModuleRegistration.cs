@@ -1,6 +1,7 @@
-﻿using Demo.Persistence.Modules.Finance;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
+using Demo.Persistence.Modules.Finance;
 
 namespace Demo.Application.Modules.Finance
 {

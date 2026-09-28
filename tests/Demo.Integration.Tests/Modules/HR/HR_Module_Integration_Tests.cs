@@ -32,11 +32,6 @@ namespace Demo.Integration.Tests.Modules.HR
             Assert.Multiple(() =>
             {
                 Assert.That(
-                    response.IsSuccess,
-                    Is.True,
-                    response.FailureReason);
-
-                Assert.That(
                     response.EmployeeId,
                     Is.GreaterThan(0));
 

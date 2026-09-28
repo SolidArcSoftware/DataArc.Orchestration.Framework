@@ -20,7 +20,7 @@ namespace Demo.WebApi.Endpoints.HR
                         await employeeOnboardingService.OnboardEmployeeAsync(
                             onboardEmployeeRequest);
 
-                    if (!response.IsSuccess)
+                    if (!string.IsNullOrWhiteSpace(response.FailureReason))
                     {
                         return Results.Problem(
                             detail: response.FailureReason,
