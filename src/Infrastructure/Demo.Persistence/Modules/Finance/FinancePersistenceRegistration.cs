@@ -1,26 +1,22 @@
 ﻿using Demo.Persistence.DbContexts;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Demo.Persistence.Modules.Finance
 {
     public static class FinancePersistenceRegistration
     {
-        static ILoggerFactory factory = LoggerFactory.Create(builder =>
-        {
-            builder.AddConsole();
-        });
-
-        public static IServiceCollection AddFinancePersistence(this IServiceCollection services, ConfigurationManager configurationManager)
+        public static IServiceCollection AddFinancePersistence(
+            this IServiceCollection services,
+            ConfigurationManager configurationManager)
         {
             services.AddDbContextFactory<FinanceDbContext>(
                 options =>
-                    options
-                        .UseSqlServer(
-                            configurationManager.GetConnectionString("DataArcDemoDb"))
-                        .UseLoggerFactory(factory),
+                    options.UseSqlServer(
+                        configurationManager.GetConnectionString(
+                            "DataArcDemoDb")),
                 ServiceLifetime.Scoped);
 
             return services;
