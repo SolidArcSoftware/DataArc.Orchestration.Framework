@@ -1,18 +1,21 @@
-﻿using Demo.Application.Features.HR.EmployeeOnboarding.Dtos;
+using Demo.Application.Features.HR.EmployeeOnboarding.Dtos;
 using Demo.Application.Features.HR.EmployeeOnboarding.Services;
+
+using Demo.Integration.Tests.Database;
+
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Demo.Integration.Tests.Modules.HR
 {
     [TestFixture]
     [NonParallelizable]
-    internal class HRModuleIntegrationTests : SetupModulesBase
-    // Setting up all modules for demo purposes
+    internal sealed class HRModuleIntegrationTests : DemoIntegrationTestBase
     {
         [Test]
         public async Task OnboardEmployee_Should_Execute_Complete_Workflow()
         {
-            // Arrange
+            // HR owns the onboarding use case, while the real workflow composes
+            // Auth, HR, Finance, IT and Operations through the orchestration layer.
             var employeeOnboardingService =
                 ServiceProvider.GetRequiredService<IEmployeeOnboardingService>();
 
@@ -24,11 +27,9 @@ namespace Demo.Integration.Tests.Modules.HR
                 Reason = "Integration test employee onboarding"
             };
 
-            // Act
             var response =
                 await employeeOnboardingService.OnboardEmployeeAsync(request);
 
-            // Assert
             Assert.Multiple(() =>
             {
                 Assert.That(

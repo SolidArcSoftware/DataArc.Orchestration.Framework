@@ -41,8 +41,7 @@ public partial class ImportUsers
                 return;
             }
 
-            var result =
-                await response.Content.ReadFromJsonAsync<ImportEmployeesResponse>();
+            var result = await response.Content.ReadFromJsonAsync<ImportUsersResponse>();
 
             if (result == null)
             {
@@ -79,7 +78,7 @@ public partial class ImportUsers
         }
     }
 
-    private sealed class ImportEmployeesResponse
+    private sealed class ImportUsersResponse
     {
         public int TotalRecordsProcessed { get; set; }
 

@@ -1,4 +1,4 @@
-﻿using DataArc.Core;
+using DataArc.Core;
 using DataArc.EntityFrameworkCore;
 
 using Demo.Application.Modules.Auth;
@@ -6,19 +6,19 @@ using Demo.Application.Modules.Finance;
 using Demo.Application.Modules.HR;
 using Demo.Application.Modules.IT;
 using Demo.Application.Modules.Operations;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 using Demo.Persistence.DbContexts;
 using Demo.Persistence.DbModels;
 
-namespace Demo.Integration.Tests
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Demo.Integration.Tests.Database
 {
-    internal abstract class SetupModulesBase
+    internal abstract class DemoIntegrationTestBase
     {
         protected ServiceProvider ServiceProvider = null!;
-        protected int UserId { get; private set; }
 
         private IDatabaseFactory _databaseFactory = null!;
 
@@ -47,7 +47,9 @@ namespace Demo.Integration.Tests
                 })
                 .ConfigureDataArc();
 
-            //Register modules
+            // The onboarding integration test intentionally composes the full demo.
+            // HR owns the use case, but execution crosses Auth, HR, IT, Operations
+            // and Finance persistence boundaries within the same physical database.
             services.AddIdentityModule(configuration);
             services.AddHRModule(configuration);
             services.AddITModule(configuration);
@@ -62,7 +64,7 @@ namespace Demo.Integration.Tests
         public async Task SetupDatabase()
         {
             ResetDatabase();
-            UserId = await SeedDatabaseAsync();
+            await SeedDatabaseAsync();
         }
 
         [OneTimeTearDown]
@@ -90,7 +92,7 @@ namespace Demo.Integration.Tests
             demoDatabase.ExecuteCreate();
         }
 
-        private async Task<int> SeedDatabaseAsync()
+        private async Task SeedDatabaseAsync()
         {
             var authDbContextFactory =
                 ServiceProvider.GetRequiredService<IDbContextFactory<AuthDbContext>>();
@@ -114,7 +116,6 @@ namespace Demo.Integration.Tests
             };
 
             authDbContext.Set<AuthUser>().Add(user);
-
             await authDbContext.SaveChangesAsync();
 
             var employer = new Employer
@@ -133,8 +134,6 @@ namespace Demo.Integration.Tests
             hrDbContext.Set<Department>().Add(department);
 
             await hrDbContext.SaveChangesAsync();
-
-            return user.Id;
         }
     }
 }
