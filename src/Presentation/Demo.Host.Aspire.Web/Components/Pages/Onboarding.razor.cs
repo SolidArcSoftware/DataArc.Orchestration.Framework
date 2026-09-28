@@ -10,13 +10,15 @@ public partial class Onboarding
     [Inject]
     public IHttpClientFactory HttpClientFactory { get; set; } = null!;
 
-    protected int UserId { get; set; } = 1;
+    protected string UserName { get; set; } =
+        "employee1@solidarcsoftware.com";
 
     protected decimal AnnualSalary { get; set; } = 85_000;
 
     protected string CurrencyCode { get; set; } = "USD";
 
-    protected string Reason { get; set; } = "Demo employee onboarding";
+    protected string Reason { get; set; } =
+        "Demo employee onboarding";
 
     protected bool IsOnboarding { get; set; }
 
@@ -34,11 +36,12 @@ public partial class Onboarding
 
         try
         {
-            var client = HttpClientFactory.CreateClient("DataArcApi");
+            var client =
+                HttpClientFactory.CreateClient("DataArcApi");
 
             var request = new OnboardEmployeeRequest
             {
-                UserId = UserId,
+                UserName = UserName,
                 AnnualSalary = AnnualSalary,
                 CurrencyCode = CurrencyCode,
                 Reason = Reason
@@ -60,7 +63,8 @@ public partial class Onboarding
             }
 
             var result =
-                await response.Content.ReadFromJsonAsync<OnboardEmployeeResponse>();
+                await response.Content
+                    .ReadFromJsonAsync<OnboardEmployeeResponse>();
 
             if (result == null)
             {
@@ -71,8 +75,8 @@ public partial class Onboarding
             }
 
             SuccessMessage =
-                $"User {result.EmployeeId:N0} " +
-                $"{result.Name} {result.Surname} was onboarded in " +
+                $"Identity user {UserName} was onboarded as " +
+                $"employee {result.EmployeeId:N0} in " +
                 $"{stopwatch.ElapsedMilliseconds:N0} milliseconds. " +
                 $"Payroll record {result.PayrollRecordId:N0} was created.";
         }
@@ -95,25 +99,29 @@ public partial class Onboarding
         HttpResponseMessage response,
         long elapsedMilliseconds)
     {
-        var content = await response.Content.ReadAsStringAsync();
+        var content =
+            await response.Content.ReadAsStringAsync();
 
         if (!string.IsNullOrWhiteSpace(content))
         {
             try
             {
-                using var document = JsonDocument.Parse(content);
+                using var document =
+                    JsonDocument.Parse(content);
 
                 if (document.RootElement.TryGetProperty(
                         "detail",
                         out var detailElement))
                 {
-                    var detail = detailElement.GetString();
+                    var detail =
+                        detailElement.GetString();
 
                     if (!string.IsNullOrWhiteSpace(detail))
                     {
                         return
                             $"Employee onboarding was rejected after " +
-                            $"{elapsedMilliseconds:N0} milliseconds. {detail}";
+                            $"{elapsedMilliseconds:N0} milliseconds. " +
+                            $"{detail}";
                     }
                 }
             }
@@ -130,7 +138,7 @@ public partial class Onboarding
 
     private sealed class OnboardEmployeeRequest
     {
-        public int UserId { get; set; }
+        public string UserName { get; set; } = string.Empty;
 
         public decimal AnnualSalary { get; set; }
 
@@ -146,16 +154,6 @@ public partial class Onboarding
         public string? FailureReason { get; set; }
 
         public int EmployeeId { get; set; }
-
-        public string? Name { get; set; }
-
-        public string? Surname { get; set; }
-
-        public string? Status { get; set; }
-
-        public double Rating { get; set; }
-
-        public decimal Salary { get; set; }
 
         public int PayrollRecordId { get; set; }
     }

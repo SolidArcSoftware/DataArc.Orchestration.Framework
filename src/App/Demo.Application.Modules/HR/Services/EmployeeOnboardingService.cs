@@ -33,7 +33,12 @@ namespace Demo.Application.Modules.Modules.HR.Services
              * Prepare the onboarding state across the participating
              * application persistence boundaries.
              */
-            var preparedEmployee = await _hrOrchestration.PrepareEmployeeOnboardingAsync(new PrepareEmployeeOnboardingInput{UserId = request.UserId});
+            var preparedEmployee =
+                await _hrOrchestration.PrepareEmployeeOnboardingAsync(
+                    new PrepareEmployeeOnboardingInput
+                    {
+                        UserName = request.UserName
+                    });
 
             if (!preparedEmployee.IsSuccess)
             {
@@ -91,12 +96,12 @@ namespace Demo.Application.Modules.Modules.HR.Services
             /*
              * The policy has approved the workflow.
              * The orchestration layer now performs the coordinated
-             * persistence operation.
+             * persistence operation using the resolved Identity user.
              */
-            var output = 
-                await _hrOrchestration.OnboardEmployeeAsync(
+            var output = await _hrOrchestration.OnboardEmployeeAsync(
                     new OnboardEmployeeInput(
-                        request.UserId,
+                        preparedEmployee.UserId,
+                        preparedEmployee.EmailAddress!,
                         request.AnnualSalary,
                         request.CurrencyCode,
                         request.Reason,

@@ -35,21 +35,26 @@ namespace Demo.Orchestration.HR.Orchestrators
             _logger = logger;
         }
 
-        public override async Task<PrepareEmployeeOnboardingOutput> ExecuteAsync(
-            PrepareEmployeeOnboardingInput input,
-            PrepareEmployeeOnboardingOutput output)
+        public override async Task<PrepareEmployeeOnboardingOutput> ExecuteAsync(PrepareEmployeeOnboardingInput input, PrepareEmployeeOnboardingOutput output)
         {
             try
             {
                 /*
                  * Identity is the starting point for employee onboarding.
+                 *
+                 * The public workflow identifies the user by username rather
+                 * than exposing the internal Identity primary key.
                  */
                 await using var authDbContext =
                     await _authDbContextFactory.CreateDbContextAsync();
 
+                var normalizedUserName =
+                    input.UserName.Trim().ToUpperInvariant();
+
                 var user = await authDbContext.Users
                     .AsNoTracking()
-                    .Where(user => user.Id == input.UserId)
+                    .Where(user =>
+                        user.NormalizedUserName == normalizedUserName)
                     .Select(user => new
                     {
                         user.Id,
@@ -74,6 +79,9 @@ namespace Demo.Orchestration.HR.Orchestrators
                 /*
                  * Determine whether HR has already materialised an Employee
                  * for the selected Identity user.
+                 *
+                 * From this point onward the resolved Identity UserId is used
+                 * internally for relational persistence.
                  */
                 await using var hrDbContext =
                     await _hrDbContextFactory.CreateDbContextAsync();
@@ -81,7 +89,7 @@ namespace Demo.Orchestration.HR.Orchestrators
                 var employee = await hrDbContext.Employee!
                     .AsNoTracking()
                     .Where(employee =>
-                        employee.UserId == input.UserId)
+                        employee.UserId == user.Id)
                     .Select(employee => new
                     {
                         employee.Id,
@@ -175,8 +183,8 @@ namespace Demo.Orchestration.HR.Orchestrators
             {
                 _logger.LogError(
                     exception,
-                    "Failed to prepare employee onboarding for user {UserId}.",
-                    input.UserId);
+                    "Failed to prepare employee onboarding for user {UserName}.",
+                    input.UserName);
 
                 output.IsSuccess = false;
                 output.FailureReason =

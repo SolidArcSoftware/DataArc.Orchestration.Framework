@@ -18,7 +18,7 @@ namespace Demo.Integration.Tests.Modules.HR
 
             var request = new OnboardEmployeeRequestDto
             {
-                UserId = 1,
+                UserName = "employee1@solidarcsoftware.com",
                 AnnualSalary = 95_000,
                 CurrencyCode = "USD",
                 Reason = "Integration test employee onboarding"

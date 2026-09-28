@@ -205,8 +205,7 @@ namespace Demo.Orchestration.HR.Orchestrators
                 {
                     EmployeeId = employee.Id,
                     AccessLevel = "Standard",
-                    EmailAddress =
-                        $"employee-{employee.Id}@solidarcsoftware.com",
+                    EmailAddress = input.EmailAddress,
                     RequestStatus = "Requested",
                     RequestedOnUtc = createdOnUtc
                 };

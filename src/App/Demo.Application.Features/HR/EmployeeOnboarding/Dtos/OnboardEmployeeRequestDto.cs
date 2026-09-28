@@ -2,9 +2,12 @@
 {
     public sealed class OnboardEmployeeRequestDto
     {
-        public int UserId { get; set; }
+        public string UserName { get; set; } = string.Empty;
+
         public decimal AnnualSalary { get; set; }
-        public string CurrencyCode { get; set; }
-        public string Reason { get; set; }
+
+        public string CurrencyCode { get; set; } = string.Empty;
+
+        public string Reason { get; set; } = string.Empty;
     }
 }

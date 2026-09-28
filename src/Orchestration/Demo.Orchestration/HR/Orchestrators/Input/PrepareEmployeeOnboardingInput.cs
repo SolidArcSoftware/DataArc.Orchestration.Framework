@@ -4,6 +4,6 @@ namespace Demo.Orchestration.HR.Orchestrators.Input
 {
     public sealed class PrepareEmployeeOnboardingInput : IOrchestratorInput
     {
-        public int UserId { get; set; }
+        public string UserName { get; set; } = string.Empty;
     }
 }
