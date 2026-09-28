@@ -1,5 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 using DataArc.EntityFrameworkCore;
 using DataArc.Orchestrator;
@@ -15,23 +14,27 @@ namespace Demo.Orchestration.Auth.Orchestration
     public sealed class ImportUsersDataOrchestrator
         : Orchestrator<ImportUsersInput, ImportUsersOutput>
     {
-        private readonly IDbContextFactory<HrDbContext> _hrDbContextFactory;
+        private readonly IDbContextFactory<AuthDbContext> _authDbContextFactory;
 
         public ImportUsersDataOrchestrator(
-            IDbContextFactory<HrDbContext> hrDbContextFactory)
+            IDbContextFactory<AuthDbContext> authDbContextFactory)
         {
-            _hrDbContextFactory = hrDbContextFactory;
+            _authDbContextFactory = authDbContextFactory;
         }
 
-        public override async Task<ImportUsersOutput> ExecuteAsync(ImportUsersInput input, ImportUsersOutput output)
+        public override async Task<ImportUsersOutput> ExecuteAsync(
+            ImportUsersInput input,
+            ImportUsersOutput output)
         {
             await using var dbContext =
-                await _hrDbContextFactory.CreateDbContextAsync();
+                await _authDbContextFactory.CreateDbContextAsync();
 
             var importData = SeedDataGenerator
                 .GenerateIdentityUserSeedData(input.ImportCountCount);
 
-            await dbContext.AddBulkAsync(importData, input.ImportBatchSize);
+            await dbContext.AddBulkAsync(
+                importData,
+                input.ImportBatchSize);
 
             output.TotalRecordsProcessed = importData.Count;
 

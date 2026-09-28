@@ -86,7 +86,7 @@ namespace Demo.Integration.Tests
                     generateScripts: true,
                     applyChanges: true);
 
-            demoDatabase.ExecuteDrop();
+            //demoDatabase.ExecuteDrop();
             demoDatabase.ExecuteCreate();
         }
 
