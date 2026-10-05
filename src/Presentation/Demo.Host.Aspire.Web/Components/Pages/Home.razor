@@ -1,0 +1,619 @@
+﻿@page "/"
+
+<PageTitle>DataArc Orchestration Demo</PageTitle>
+
+<div class="container-fluid px-0">
+
+    <section class="mb-5">
+        <div class="p-4 p-lg-5 rounded-3 border bg-body-tertiary">
+            <div class="row align-items-center g-4">
+
+                <div class="col-lg-8">
+                    <h1 class="display-4 fw-semibold mb-3">
+                        Explicit Application Orchestration
+                    </h1>
+
+                    <p class="lead mb-3">
+                        Use-case-oriented orchestration for modular .NET applications.
+                    </p>
+
+                    <p class="mb-0">
+                        This demo shows how DataArc keeps business policy,
+                        application coordination, observability and persistence
+                        mechanics separate while coordinating work across multiple
+                        EF Core <code>DbContext</code> boundaries.
+                    </p>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <h2 class="h5">Core idea</h2>
+
+                            <p class="mb-0">
+                                Give cross-boundary execution mechanics a dedicated
+                                home without moving business rules out of the domain.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <section class="mb-5">
+        <h2 class="mb-3">
+            Why a dedicated orchestration layer?
+        </h2>
+
+        <p class="mb-4">
+            The goal is not to remove architectural boundaries.
+            It is to avoid creating application plumbing merely because a pattern
+            says another abstraction must exist.
+        </p>
+
+        <div class="row g-4">
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="h5">
+                            Repository Proliferation
+                        </h3>
+
+                        <p class="mb-0">
+                            Avoid repositories for repository's sake and repository
+                            permutations created only to coordinate different
+                            persistence boundaries.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="h5">
+                            Command / Query Sprawl
+                        </h3>
+
+                        <p class="mb-0">
+                            Queries and commands that belong to one coherent use case
+                            can remain together instead of becoming separate handlers
+                            for every persistence or column permutation.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="h5">
+                            Handler Sprawl
+                        </h3>
+
+                        <p class="mb-0">
+                            Keep meaningful domain events without turning every
+                            application step into another command handler,
+                            query handler or event handler.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h3 class="h5">
+                            Use-Case Cohesion
+                        </h3>
+
+                        <p class="mb-0">
+                            An explicit orchestrator can query what the use case needs,
+                            execute its persistence operations and coordinate the
+                            participating boundaries in one place.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <section class="mb-5">
+        <h2 class="mb-3">
+            The architectural flow
+        </h2>
+
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+
+                <div class="row g-4 text-center">
+
+                    <div class="col-md-6 col-xl">
+                        <div class="h5 mb-2">Application</div>
+                        <div class="text-body-secondary small">
+                            Coordinates the use case
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-xl">
+                        <div class="h5 mb-2">Domain Policy</div>
+                        <div class="text-body-secondary small">
+                            Decides whether the operation is allowed
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-xl">
+                        <div class="h5 mb-2">Port</div>
+                        <div class="text-body-secondary small">
+                            Decouples the application from execution
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-xl">
+                        <div class="h5 mb-2">Orchestration</div>
+                        <div class="text-body-secondary small">
+                            Coordinates persistence
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-xl">
+                        <div class="h5 mb-2">Persistence</div>
+                        <div class="text-body-secondary small">
+                            Stores state
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr class="my-4" />
+
+                <p class="mb-0 text-center">
+                    <strong>
+                        Business rules remain in the domain.
+                    </strong>
+                    The orchestration layer executes an already-approved
+                    persistence workflow.
+                </p>
+
+            </div>
+        </div>
+    </section>
+
+
+    <section class="mb-5">
+        <h2 class="mb-3">
+            Two kinds of orchestration
+        </h2>
+
+        <div class="row g-4">
+
+            <div class="col-lg-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+
+                        <h3 class="h4">
+                            .NET Aspire
+                        </h3>
+
+                        <p>
+                            Aspire orchestrates the applications and development
+                            environment.
+                        </p>
+
+                        <ul class="mb-0">
+                            <li>Application hosting</li>
+                            <li>Service discovery</li>
+                            <li>Health checks</li>
+                            <li>Logs</li>
+                            <li>Metrics</li>
+                            <li>Distributed tracing</li>
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+
+                        <h3 class="h4">
+                            DataArc
+                        </h3>
+
+                        <p>
+                            DataArc orchestrates explicit application work inside
+                            the application process.
+                        </p>
+
+                        <ul class="mb-0">
+                            <li>Use-case orchestration</li>
+                            <li>Domain-policy integration</li>
+                            <li>Observer event dispatch</li>
+                            <li>Cross-module coordination</li>
+                            <li>Multi-DbContext persistence</li>
+                            <li>Transactional execution</li>
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <section class="mb-5">
+        <h2 class="mb-3">
+            Solution architecture
+        </h2>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <img src="@Assets["images/Architecture.png"]"
+                     alt="DataArc orchestration with clean architecture"
+                     class="img-fluid" />
+
+            </div>
+        </div>
+    </section>
+
+
+    <section class="mb-5">
+        <h2 class="mb-3">
+            Application boundaries
+        </h2>
+
+        <div class="row g-4">
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+
+                        <h3 class="h5">
+                            Presentation
+                        </h3>
+
+                        <p class="mb-0">
+                            Razor Components and ASP.NET Core endpoints expose
+                            application outcomes without owning business policy or
+                            persistence coordination.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+
+                        <h3 class="h5">
+                            Application + Domain
+                        </h3>
+
+                        <p class="mb-0">
+                            Feature services coordinate the use case while rich
+                            domain values and policies own the business decision.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+
+                        <h3 class="h5">
+                            Orchestration
+                        </h3>
+
+                        <p class="mb-0">
+                            Ports, adapters and orchestrators isolate the application
+                            from transaction handling, save order, connections and
+                            cross-context persistence mechanics.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+
+                        <h3 class="h5">
+                            Persistence
+                        </h3>
+
+                        <p class="mb-0">
+                            Multiple EF Core contexts preserve application
+                            boundaries while participating in one relational
+                            SQL Server model.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <section class="mb-5">
+        <h2 class="mb-3">
+            Policy decisions are observable
+        </h2>
+
+        <div class="row g-4">
+
+            <div class="col-lg-7">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+
+                        <h3 class="h5">
+                            One decision, multiple consumers
+                        </h3>
+
+                        <p>
+                            The onboarding policy produces both the business outcome
+                            and domain events describing that outcome.
+                        </p>
+
+                        <pre class="mb-3"><code>await _observableEventHandler.DispatchAsync(
+    policyResult.DomainEvents);</code></pre>
+
+                        <p class="mb-0">
+                            The caller receives meaningful business information while
+                            observers independently expose the same decision through
+                            logs, traces and metrics.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+
+                        <h3 class="h5">
+                            Observer pipeline
+                        </h3>
+
+                        <ul class="mb-0">
+                            <li>Structured logging</li>
+                            <li>Activity tracing</li>
+                            <li>Metrics</li>
+                            <li>Diagnostics</li>
+                            <li>Auditing or future integrations</li>
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <section class="mb-5">
+        <h2 class="mb-3">
+            Business rejection is not a system failure
+        </h2>
+
+        <div class="row g-4">
+
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+
+                        <h3 class="h5">
+                            Validation
+                        </h3>
+
+                        <p class="mb-0">
+                            The request itself is malformed or incomplete.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+
+                        <h3 class="h5">
+                            Policy Rejection
+                        </h3>
+
+                        <p class="mb-0">
+                            The request is understood, but a business rule says the
+                            operation must not proceed. The UI receives the policy
+                            reason and observers record the same decision.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+
+                        <h3 class="h5">
+                            System Failure
+                        </h3>
+
+                        <p class="mb-0">
+                            Persistence, infrastructure and unexpected technical
+                            failures roll back execution and propagate as exceptions
+                            rather than masquerading as business outcomes.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <section class="mb-5">
+        <h2 class="mb-3">
+            Composed relational model
+        </h2>
+
+        <p>
+            ASP.NET Core Identity and four business contexts participate in one
+            physical relational database while preserving explicit application
+            boundaries and database-enforced relationships.
+        </p>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <img src="@Assets["images/ERD.png"]"
+                     alt="DataArc Orchestration Demo database model"
+                     class="img-fluid" />
+
+            </div>
+        </div>
+    </section>
+
+
+    <section class="mb-5">
+        <h2 class="mb-3">
+            What this demo demonstrates
+        </h2>
+
+        <div class="row g-4">
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+
+                        <h3 class="h5">
+                            Modular DbContexts
+                        </h3>
+
+                        <p class="mb-0">
+                            Identity, HR, Finance, IT and Operations remain
+                            separate application persistence boundaries.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+
+                        <h3 class="h5">
+                            Domain Policy
+                        </h3>
+
+                        <p class="mb-0">
+                            Business rules decide whether onboarding may proceed
+                            before persistence execution begins.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+
+                        <h3 class="h5">
+                            Observable Decisions
+                        </h3>
+
+                        <p class="mb-0">
+                            Accepted and rejected policy decisions flow through
+                            DataArc.Observer into logs, traces and metrics.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+
+                        <h3 class="h5">
+                            Transactional Orchestration
+                        </h3>
+
+                        <p class="mb-0">
+                            HR, Finance, IT and Operations persistence is coordinated
+                            by one explicit onboarding workflow and one local
+                            transaction.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <section class="mb-5">
+        <h2 class="mb-3">
+            SQL Server database composition
+        </h2>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <p>
+                    The integration-test path also demonstrates the commercial
+                    <code>DataArc.EntityFrameworkCore.SqlServer</code> DDL Builder.
+                </p>
+
+                <p class="mb-0">
+                    Five EF Core contexts are composed into the physical demo
+                    database, SQL scripts are generated, and the complete
+                    onboarding workflow is executed against a real SQL Server
+                    database.
+                </p>
+
+            </div>
+        </div>
+    </section>
+
+
+    <section class="pb-4">
+        <div class="border-top pt-4 d-flex flex-column flex-lg-row justify-content-between gap-3">
+
+            <div>
+                <strong>
+                    Solid Arc Software
+                </strong>
+
+                <div class="text-body-secondary small">
+                    Strategize. Observe. Adapt. Provide.
+                </div>
+            </div>
+
+            <div class="text-body-secondary small align-self-lg-end">
+                Domain policy. Observable decisions. Explicit orchestration.
+            </div>
+
+        </div>
+    </section>
+
+</div>

@@ -1,0 +1,44 @@
+﻿@page "/users/import"
+@rendermode InteractiveServer
+
+<PageTitle>Import Users</PageTitle>
+
+<h1>Import Users</h1>
+
+<p>
+    Import identity users using the DataArc bulk execution pipeline.
+</p>
+
+<div class="mb-3">
+    <button class="btn btn-primary"
+            @onclick="ImportUsersAsync"
+            disabled="@IsImporting">
+
+        @if (IsImporting)
+        {
+            <span class="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"></span>
+
+            <span>Importing users...</span>
+        }
+        else
+        {
+            <span>Import Users</span>
+        }
+    </button>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(SuccessMessage))
+{
+    <div class="alert alert-success" role="alert">
+        @SuccessMessage
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @ErrorMessage
+    </div>
+}
