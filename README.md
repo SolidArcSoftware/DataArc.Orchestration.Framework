@@ -1,5 +1,7 @@
 # DataArc Orchestration Framework Demo
 
+<img width="5120" height="2820" alt="OrchestrationFrameworkDemo" src="https://github.com/user-attachments/assets/ec60902e-dc7f-45da-b319-e24e779aac43" />
+
 A public, end-to-end demonstration of **use-case-oriented orchestration in .NET**.
 
 This repository shows how DataArc can keep business policy, application coordination, persistence mechanics, observability, and presentation concerns separate without requiring every use case to grow into a collection of repositories, handlers, commands, queries, and persistence-aware services.
