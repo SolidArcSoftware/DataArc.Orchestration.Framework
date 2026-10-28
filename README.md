@@ -10,6 +10,26 @@ The demo uses multiple EF Core `DbContext` boundaries over a single physical SQL
 
 ---
 
+## DataArc ecosystem and Microsoft Learn
+
+This demonstration is built around reusable components of the **DataArc .NET ecosystem**.
+
+**DataArc.EntityFrameworkCore** is listed in Microsoft's [EF Core tools and extensions documentation](https://learn.microsoft.com/en-us/ef/core/extensions/#dataarcentityframeworkcore). The listing makes the library discoverable to EF Core developers; it is not a Microsoft certification or endorsement.
+
+- **[DataArc.EntityFrameworkCore (free)](https://github.com/SolidArcSoftware/DataArc.EntityFrameworkCore)** — reusable EF Core bulk and parallel execution capabilities.
+- **DataArc.Orchestrator and DataArc.Observer (free)** — explicit use-case orchestration and in-process observation, both usable independently of this demo.
+- **DataArc.EntityFrameworkCore.SqlServer (commercial)** — advanced SQL Server capabilities, including multi-`DbContext` transaction coordination and the DDL Builder exercised by this repository's integration test.
+
+**[Explore free packages and commercial SQL Server licensing](https://dataarc.dev/Content/Pricing/Pricing)**
+
+> The runnable Web UI/API demo uses the supplied SQL setup script. The integration-test path that exercises the commercial SQL Server DDL Builder requires a valid DataArc licence or configured server key. See [Integration-test licensing](#integration-test-licensing) below.
+
+
+
+---
+
+
+
 ## Why use a dedicated orchestration layer?
 
 The goal is not to remove architectural boundaries. The goal is to stop creating abstractions simply because a pattern says they must exist.
@@ -734,7 +754,7 @@ EF Core-oriented persistence capabilities used by the demo.
 
 ### EntityFrameworkCore.SqlServer
 
-Commercial SQL Server functionality including the database-definition / DDL Builder path demonstrated by the integration test.
+Commercial SQL Server functionality including the database-definition / DDL Builder path demonstrated by the integration test. See [free and commercial licensing](https://dataarc.dev/Content/Pricing/Pricing) for the current offering and terms.
 
 ---
 
